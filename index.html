@@ -178,7 +178,7 @@
                 <li v-for="video in videos">
                     <video-item :video="video"></video-item>
                 </li>
-                <infinite-loading @infinite="infiniteHandler"></infinite-loading>
+                <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading"></infinite-loading>
             </ul>
 
         </div>

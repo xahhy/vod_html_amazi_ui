@@ -22,7 +22,12 @@ var Category = new Vue({
     methods: {
         select: function (name) {
             this.active_name = name;
-            load_video_list();
+            VideoGallery.videos = [];
+            VideoGallery.cur_page = 1;
+            VideoGallery.$nextTick(() => {
+                console.log('Reset Video Gallery');
+                VideoGallery.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+            });
         }
     }
 });
@@ -35,6 +40,7 @@ var CategoryMain = new Vue({
     methods: {
         select: function (name) {
             this.active_name = name;
+            load_category_list();
             load_category_region(name);
             load_category_time(name);
         },
