@@ -41,34 +41,41 @@
     <script src="assets_amazi/js/jquery-3.2.1.min.js"></script>
     <script src="assets_amazi/js/amazeui.min.js"></script>
     <script src="vue.js"></script>
+    <script src="vue-infinite-loading.js"></script>
     <style>
         .am_list_block {
             padding: 10px;
             background: #fff;
             position: relative;
         }
+
         .am_img_bg {
             display: block;
         }
-        .am_listimg_info{
+
+        .am_listimg_info {
             color: #d1d1d1;
             padding-top: 5px;
         }
+
         .am_imglist_time {
             position: absolute;
             bottom: 11px;
             right: 10px;
             margin-right: 0;
         }
+
         .am_category_btn {
             margin: 5px 5px;
             display: inline-block;
         }
+
         .am_category_container {
             overflow: auto;
 
         }
-        ::-webkit-scrollbar {/*隐藏滚轮*/
+
+        ::-webkit-scrollbar { /*隐藏滚轮*/
             display: none;
         }
     </style>
@@ -85,23 +92,24 @@
 
     <div class="am-collapse am-topbar-collapse am-text-center" id="doc-topbar-collapse">
         <ul id="id_category_main" class="am-nav am-nav-pills am-topbar-nav am-text-center">
-            <li v-for="category in categories" :class="{'am-active': active_name == category.name}" :name="category.name">
+            <li v-for="category in categories" :class="{'am-active': active_name == category.name}"
+                :name="category.name">
                 <a :href="gen_hash(category.name)" @click="select(category.name)">{{category.name}}</a>
             </li>
 
             <!--<li class="am-dropdown" data-am-dropdown>-->
-                <!--<a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">-->
-                    <!--下拉 <span class="am-icon-caret-down"></span>-->
-                <!--</a>-->
-                <!--<ul class="am-dropdown-content">-->
-                    <!--<li class="am-dropdown-header">标题</li>-->
-                    <!--<li><a href="#">1. 去月球</a></li>-->
-                    <!--<li class="am-active"><a href="#">2. 去火星</a></li>-->
-                    <!--<li><a href="#">3. 还是回地球</a></li>-->
-                    <!--<li class="am-disabled"><a href="#">4. 下地狱</a></li>-->
-                    <!--<li class="am-divider"></li>-->
-                    <!--<li><a href="#">5. 桥头一回首</a></li>-->
-                <!--</ul>-->
+            <!--<a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">-->
+            <!--下拉 <span class="am-icon-caret-down"></span>-->
+            <!--</a>-->
+            <!--<ul class="am-dropdown-content">-->
+            <!--<li class="am-dropdown-header">标题</li>-->
+            <!--<li><a href="#">1. 去月球</a></li>-->
+            <!--<li class="am-active"><a href="#">2. 去火星</a></li>-->
+            <!--<li><a href="#">3. 还是回地球</a></li>-->
+            <!--<li class="am-disabled"><a href="#">4. 下地狱</a></li>-->
+            <!--<li class="am-divider"></li>-->
+            <!--<li><a href="#">5. 桥头一回首</a></li>-->
+            <!--</ul>-->
             <!--</li>-->
         </ul>
 
@@ -121,7 +129,9 @@
         <div id="id_category_list" class="am-panel-bd am-text-nowrap am_category_container">
             <span class="am-inline">分类:</span>
             <div class="m-category-list am-inline">
-                <button v-for="category in categories" :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}" @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
+                <button v-for="category in categories"
+                        :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}"
+                        @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
                     {{category.name}}
                 </button>
 
@@ -139,14 +149,18 @@
         <div class="am-collapse am-panel-bd  am_category_container am-text-nowrap" id="id_advanced">
             <p class="am-inline">时间:</p>
             <div id="id_category_time" class="m-time-list am-inline">
-                <button v-for="category in categories" :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}" @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
+                <button v-for="category in categories"
+                        :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}"
+                        @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
                     {{category.name}}
                 </button>
             </div>
             <br/>
             <p class="am-inline">地区:</p>
             <div id="id_category_region" class="m-region-list am-inline am_category_container">
-                <button v-for="category in categories" :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}" @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
+                <button v-for="category in categories"
+                        :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}"
+                        @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
                     {{category.name}}
                 </button>
             </div>
@@ -159,43 +173,31 @@
             搜索结果
         </div>
         <div class="am-panel-bd">
-            <ul data-am-widget="gallery" class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered am-no-layout">
-                <li>
-                    <div class="am-gallery-item am_list_block">
-                        <a href="#" class="am_img_bg" style="height: 260px;">
-                            <img src="img/animal.png" class="am-inline" style="height: 100%">
-                        </a>
-
-                        <div class="am_listimg_info">
-                            <span class="am-icon-heart">15</span>
-                        </div>
-
-                        <span class="am_imglist_time" style="display: block;">7天前</span>
-                    </div>
+            <ul id="id_video_gallery" data-am-widget="gallery"
+                class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered am-no-layout">
+                <li v-for="video in videos">
+                    <video-item :video="video"></video-item>
                 </li>
-
-                <li>
-                    <div class="am-gallery-item am_list_block">
-                        <a href="#" class="am_img_bg" style="height: 260px;">
-                            <img src="img/animal.png" class="am-inline" style="height: 100%">
-                        </a>
-
-                        <div class="am_listimg_info">
-                            <span class="am-icon-heart">15</span>
-                        </div>
-
-                        <span class="am_imglist_time" style="display: block;">7天前</span>
-                    </div>
-                </li>
-
-
+                <infinite-loading @infinite="infiniteHandler"></infinite-loading>
             </ul>
 
         </div>
     </div>
 
 </div>
+<template id="id_video_item_tpl">
+    <div class="am-gallery-item am_list_block">
+        <a href="#" class="am_img_bg" style="height: 260px;">
+            <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
+        </a>
 
+        <div class="am_listimg_info">
+            <span class="am-icon-heart">{{video.definition}}</span>
+        </div>
+
+        <span class="am_imglist_time" style="display: block;">{{video.id}}</span>
+    </div>
+</template>
 <script src="app.js"></script>
 </body>
 </html>

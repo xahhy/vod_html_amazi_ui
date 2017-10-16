@@ -3,12 +3,14 @@
  */
 'use strict';
 /* 全局变量 开始*/
-const URL_PREFIX = 'http://192.168.0.145:8000/';
-const CATEGORY_URL = URL_PREFIX + 'api/category';
-const YEAR_URL = URL_PREFIX + 'api/year';
-const REGION_URL = URL_PREFIX + 'api/region';
-
+const URL_PREFIX = 'http://192.168.0.145:8000';
+const CATEGORY_URL = URL_PREFIX + '/api/category';
+const YEAR_URL = URL_PREFIX + '/api/year';
+const REGION_URL = URL_PREFIX + '/api/region';
+const VIDEO_LIST_URL = URL_PREFIX + '/api';
 var CategoryListData;
+/* Vue对象 */
+
 var Category = new Vue({
     el: '#id_category_list',
     data: {
@@ -20,6 +22,7 @@ var Category = new Vue({
     methods: {
         select: function (name) {
             this.active_name = name;
+            load_video_list();
         }
     }
 });
@@ -32,7 +35,6 @@ var CategoryMain = new Vue({
     methods: {
         select: function (name) {
             this.active_name = name;
-            load_category_list();
             load_category_region(name);
             load_category_time(name);
         },
@@ -69,6 +71,43 @@ var CategoryRegion = new Vue({
         }
     }
 });
+var VideoItem = Vue.component('video-item', {
+    template: '#id_video_item_tpl',
+    props: ['video'],
+    computed:{
+        full_image_url:function () {
+            return URL_PREFIX + this.video.image;
+        }
+    }
+});
+var VideoGallery = new Vue({
+    el: '#id_video_gallery',
+    data: {
+        videos: [],
+        cur_page:1,
+        num_pages:0
+    },
+    methods: {
+        infiniteHandler: function ($state) {
+                //$state.complete();$state.loaded();
+            var vue=this;
+            $.get(VIDEO_LIST_URL,{page: vue.cur_page},function (data, status) {
+                vue.cur_page = data['cur_page'];
+                vue.num_pages = data['num_pages'];
+                $.each(data['results'],function (index, value) {
+                    vue.videos.push(value);
+                });
+                if(vue.cur_page === vue.num_pages){
+                    $state.complete();
+                }else{
+                    console.log('cur_page='+vue.cur_page);
+                    $state.loaded();
+                    vue.cur_page++;
+                }
+            });
+        }
+    }
+});
 /* 全局变量 结束*/
 
 /* 加载函数 开始 */
@@ -77,7 +116,7 @@ function load_category_list() {
         {name: '全部'}
     ];
     $.each(CategoryListData[CategoryMain.active_name], function (index, item) {
-         Category.categories.push(item);
+        Category.categories.push(item);
     });
     Category.active_name = '全部';
 }
@@ -115,6 +154,49 @@ function load_category_region(name) {
         CategoryRegion.active_name = '全部';
     })
 }
+
+/*
+ {
+    "count": 25,
+    "next": "http://127.0.0.1:8000/api/?page=2",
+    "previous": null,
+    "cur_page": 1,
+    "num_pages": 3,
+    "page_range": [
+        1,
+        2,
+        3
+    ],
+    "year": null,
+    "results": [
+        {
+            "id": 36,
+            "title": "Django-vod批量上传",
+            "image": "/media/hhy/browser-icon-chrome.png.200x300_q85_crop.png",
+            "category": "言情片  (level 2)",
+            "definition": "SD",
+            "duration": null,
+            "slug": "django-vodpi-liang-shang-chuan-24"
+        },
+        {
+            "id": 35,
+            "title": "Django-vod批量上传",
+            "image": "/media/hhy/browser-icon-chrome.png.200x300_q85_crop.png",
+            "category": "言情片  (level 2)",
+            "definition": "SD",
+            "duration": null,
+            "slug": "django-vodpi-liang-shang-chuan-23"
+        }
+    ]
+}
+ */
+function load_video_list() {
+    $.get(VIDEO_LIST_URL, function (data, status) {
+        $.each(data['results'], function (index, value) {
+            VideoGallery.videos.push(value);
+        })
+    })
+}
 /* 加载函数 结束 */
 
 
@@ -143,7 +225,7 @@ function InitPage() {
         CategoryListData = data;
         load_category_main();
         current_category_main = current_category_main.substring(1);
-        if(current_category_main !== '')CategoryMain.active_name = current_category_main;
+        if (current_category_main !== '') CategoryMain.active_name = current_category_main;
         CategoryMain.select(CategoryMain.active_name);
         $('#id_category_list').find(':first-child').click();
     })
