@@ -15,20 +15,32 @@
 var VideoDetail = new Vue({
     el: '#id_detail',
     data: {
-        video: {}
+        video: {},
+        active_name:''
+    },
+    methods:{
+        load_video:function (video_url) {
+            create_video(video_url);
+        },
+        select: function (name) {
+            this.active_name = name;
+        }
     }
 });
 function create_video_detail_html() {
     return "<video id='id_video_js' class='video-js'></video>"
 }
-function create_video() {
+function create_video(video_url) {
     // myPlayer = videojs('id_video_js',{},function () {
     //     alert('setup videojs');
     // });
 
     if (myPlayer) {
-        myPlayer.dispose();
-        myPlayer = null;
+        myPlayer.pause();
+        setTimeout(function() {
+            myPlayer.dispose();
+            myPlayer = null;
+        }, 0);
     }
     $('#id_video_container').html(create_video_detail_html());
     myPlayer = videojs(document.getElementById('id_video_js'), {
@@ -42,20 +54,41 @@ function create_video() {
     });
     myPlayer.pause();
     myPlayer.src({
-        src: VideoDetail.video.video,
+        src: video_url,
         type: 'video/mp4',
         withCredentials: false
     });
-    //myPlayer.load();
-    // myPlayer.play();
 }
+
+/* 视频数据加载函数 */
+/*
+{
+    "title": "2",
+    "image": "http://localhost:8000/media/hhy/Gift-Box.png",
+    "video": "http://localhost:8000/media/hhy/Try%20AngularJS%201.5%20-%202%20of%2033%20-%20Front%20End%20vs%20Backend.mp4",
+    "category": "动作片",
+    "description": "sdfsf",
+    "definition": "SD",
+    "video_list": [
+    {
+        "title": "Try AngularJS 1.5 - 6 of 33 -  Setup Project Folder",
+        "description": "sfgsa",
+        "video": "http://localhost:8000/media/hhy/Try%20AngularJS%201.5%20-%206%20of%2033%20-%20%20Setup%20Project%20Folder.mp4"
+    },
+    {
+        "title": "2",
+        "description": "sdfsf",
+        "video": "http://localhost:8000/media/hhy/Try%20AngularJS%201.5%20-%202%20of%2033%20-%20Front%20End%20vs%20Backend.mp4"
+    }
+]
+}
+*/
 function load_video_detail(id) {
     window.location.hash = id;
     show_detail_view();
     var url = VIDEO_DETAIL_URL + id;
     $.get(url, function (data, status) {
         VideoDetail.video = data;
-        create_video();
+        create_video(VideoDetail.video.video);
     });
-
 }

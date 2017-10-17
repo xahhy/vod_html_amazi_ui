@@ -37,7 +37,6 @@ var CategoryMain = new Vue({
     methods: {
         select: function (name) {
             this.active_name = name;
-            show_list_view();
             load_category_region(name);
             load_category_time(name);
             load_category_list();
@@ -106,12 +105,14 @@ var VideoGallery = new Vue({
         infiniteHandler: function ($state) {
             //$state.complete();$state.loaded();
             var vue = this;
+            if(vue.num_pages === 0)return null;
             var context = {
                 'page': vue.cur_page,
                 'main_category': CategoryMain.active_name,
                 'category': Category.active_name,
                 'year': CategoryYear.active_name,
-                'region': CategoryRegion.active_name
+                'region': CategoryRegion.active_name,
+                'search': VideoSearch.search_word
             };
             console.log(context);
             $.get(VIDEO_LIST_URL, context, function (data, status) {
@@ -143,8 +144,10 @@ var VideoGalleryHeader = new Vue({
 
 /* 加载函数 开始 */
 function load_search_result() {
+    show_list_view();
     VideoGallery.videos = [];
     VideoGallery.cur_page = 1;
+    VideoGallery.num_pages = 1;
     VideoGallery.$nextTick(() => {
         console.log('Reset Video Gallery');
         VideoGallery.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
@@ -242,8 +245,11 @@ function show_list_view() {
     // myPlayer.pause();
     // myPlayer.dispose();
     if (myPlayer) {
-        myPlayer.dispose();
-        myPlayer = null;
+        myPlayer.pause();
+        setTimeout(function() {
+            myPlayer.dispose();
+            myPlayer = null;
+        }, 0);
     }
     $('#id_list').show();
     $('#id_detail').hide();
@@ -286,6 +292,9 @@ function InitPage() {
         }
         else if (hash !== ''){
             CategoryMain.active_name = hash;
+            CategoryMain.select(CategoryMain.active_name);
+        }
+        else{
             CategoryMain.select(CategoryMain.active_name);
         }
         // $('#id_category_list').find(':first-child').click();
