@@ -35,13 +35,18 @@
     <!--
     <link rel="canonical" href="http://www.example.com/">
   -->
-
+    <link rel="stylesheet" href="dist_flat/css/flat-ui.min.css">
     <link rel="stylesheet" href="assets_amazi/css/amazeui.min.css">
     <link rel="stylesheet" href="assets_amazi/css/app.css">
     <script src="assets_amazi/js/jquery-3.2.1.min.js"></script>
     <script src="assets_amazi/js/amazeui.min.js"></script>
     <script src="vue.js"></script>
     <script src="vue-infinite-loading.js"></script>
+    <script src="dist_flat/js/flat-ui.js"></script>
+    <script src="dist_flat/js/vendor/video.js"></script>
+    <script>
+        videojs.options.flash.swf = "dist_flat/js/vendor/video-js.swf"
+    </script>
     <style>
         .am_list_block {
             padding: 10px;
@@ -76,6 +81,10 @@
         }
 
         ::-webkit-scrollbar { /*隐藏滚轮*/
+            display: none;
+        }
+
+        .am_display_none {
             display: none;
         }
     </style>
@@ -124,7 +133,7 @@
         </div>
     </div>
 </header>
-<div class="am-container">
+<div id="id_list" class="am-container">
     <div class="am-panel am-panel-default" style="text-align: left;">
         <div id="id_category_list" class="am-panel-bd am-text-nowrap am_category_container">
             <span class="am-inline">分类:</span>
@@ -169,14 +178,17 @@
 
     <!-- 视频列表 -->
     <div class="am-panel am-panel-default" style="text-align: left;">
-        <div class="am-panel-hd am-text-center">
-            搜索结果
+        <div id="id_video_gallery_header" class="am-panel-hd">
+            <span class="am-text-left">搜索结果</span>
+            <span class="am-text-right" style="float: right;">共{{count}}个搜索结果</span>
         </div>
         <div class="am-panel-bd">
             <ul id="id_video_gallery" data-am-widget="gallery"
                 class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered am-no-layout">
                 <li v-for="video in videos">
-                    <video-item :video="video"></video-item>
+                    <div>
+                        <video-item :video="video"></video-item>
+                    </div>
                 </li>
                 <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading"></infinite-loading>
             </ul>
@@ -185,19 +197,52 @@
     </div>
 
 </div>
-<template id="id_video_item_tpl">
-    <div class="am-gallery-item am_list_block">
-        <a href="#" class="am_img_bg" style="height: 260px;">
-            <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
-        </a>
-
-        <div class="am_listimg_info">
-            <span class="am-icon-heart">{{video.definition}}</span>
+<div id="id_detail" class="am-container">
+    <div class="am-panel am-panel-default">
+        <header class="am-panel-hd">
+            <h3 class="am-panel-title">
+                <span class="am-badge am-badge-success am-text-lg am-round">{{video.category}}</span>
+                <span class="am-badge am-text-lg am-round">{{video.title}}</span>
+                <span class="am-badge am-badge-warning am-text-lg am-round">{{video.definition}}</span></h3>
+        </header>
+        <div class="am-panel-bd">
+            <div id="id_video_container">
+                <video id="id_video_js" class="video-js"></video>
+            </div>
         </div>
 
-        <span class="am_imglist_time" style="display: block;">{{video.id}}</span>
+    </div>
+    <div class="am-panel am-panel-default">
+        <header class="am-panel-hd">
+            <h3 class="am-panel-title">
+                简介
+            </h3>
+        </header>
+        <div class="am-panel-bd">
+            {{video.description}}
+        </div>
+
+    </div>
+</div>
+<template id="id_video_item_tpl">
+    <!--<div class="am-gallery-item am_list_block">-->
+    <div class="am-gallery-item">
+        <a href="#" class="" style="height: 260px;" @click.prevent="select(video.id)">
+            <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
+            <h3 class="am-gallery-title">{{video.title}}</h3>
+            <div class="am_listimg_info">
+                <span class="am-icon-heart">{{video.definition}}</span>
+            </div>
+        </a>
     </div>
 </template>
+
+<div data-am-widget="gotop" class="am-gotop am-gotop-fixed">
+    <a href="#top" title="">
+        <i class="am-gotop-icon am-icon-chevron-up"></i>
+    </a>
+</div>
 <script src="app.js"></script>
+<script src="detail.js"></script>
 </body>
 </html>

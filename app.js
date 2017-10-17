@@ -8,7 +8,9 @@ const CATEGORY_URL = URL_PREFIX + '/api/category';
 const YEAR_URL = URL_PREFIX + '/api/year';
 const REGION_URL = URL_PREFIX + '/api/region';
 const VIDEO_LIST_URL = URL_PREFIX + '/api';
+const VIDEO_DETAIL_URL = URL_PREFIX + '/api/';
 var CategoryListData;
+var myPlayer;
 /* Vue对象 */
 
 var Category = new Vue({
@@ -22,12 +24,7 @@ var Category = new Vue({
     methods: {
         select: function (name) {
             this.active_name = name;
-            VideoGallery.videos = [];
-            VideoGallery.cur_page = 1;
-            VideoGallery.$nextTick(() => {
-                console.log('Reset Video Gallery');
-                VideoGallery.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-            });
+            load_search_result();
         }
     }
 });
@@ -40,16 +37,18 @@ var CategoryMain = new Vue({
     methods: {
         select: function (name) {
             this.active_name = name;
-            load_category_list();
+            show_list_view();
             load_category_region(name);
             load_category_time(name);
+            load_category_list();
+            load_search_result();
         },
         gen_hash: function (name) {
             return '#' + name;
         }
     }
 });
-var CategoryTime = new Vue({
+var CategoryYear = new Vue({
     el: '#id_category_time',
     data: {
         categories: [
@@ -60,6 +59,7 @@ var CategoryTime = new Vue({
     methods: {
         select: function (name) {
             this.active_name = name;
+            load_search_result();
         }
     }
 });
@@ -74,39 +74,57 @@ var CategoryRegion = new Vue({
     methods: {
         select: function (name) {
             this.active_name = name;
+            load_search_result();
+
         }
     }
 });
 var VideoItem = Vue.component('video-item', {
+    name:'video_item',
     template: '#id_video_item_tpl',
     props: ['video'],
-    computed:{
-        full_image_url:function () {
+    computed: {
+        full_image_url: function () {
             return URL_PREFIX + this.video.image;
         }
+    },
+    methods:{
+        select: function (id) {
+            load_video_detail(id);
+        }
     }
+
 });
 var VideoGallery = new Vue({
     el: '#id_video_gallery',
     data: {
         videos: [],
-        cur_page:1,
-        num_pages:0
+        cur_page: 1,
+        num_pages: 0
     },
     methods: {
         infiniteHandler: function ($state) {
-                //$state.complete();$state.loaded();
-            var vue=this;
-            $.get(VIDEO_LIST_URL,{page: vue.cur_page},function (data, status) {
+            //$state.complete();$state.loaded();
+            var vue = this;
+            var context = {
+                'page': vue.cur_page,
+                'main_category': CategoryMain.active_name,
+                'category': Category.active_name,
+                'year': CategoryYear.active_name,
+                'region': CategoryRegion.active_name
+            };
+            console.log(context);
+            $.get(VIDEO_LIST_URL, context, function (data, status) {
+                VideoGalleryHeader.count = data['count'];
                 vue.cur_page = data['cur_page'];
                 vue.num_pages = data['num_pages'];
-                $.each(data['results'],function (index, value) {
+                $.each(data['results'], function (index, value) {
                     vue.videos.push(value);
                 });
-                if(vue.cur_page === vue.num_pages){
+                if (vue.cur_page === vue.num_pages) {
                     $state.complete();
-                }else{
-                    console.log('cur_page='+vue.cur_page);
+                } else {
+                    console.log('cur_page=' + vue.cur_page);
                     $state.loaded();
                     vue.cur_page++;
                 }
@@ -114,9 +132,24 @@ var VideoGallery = new Vue({
         }
     }
 });
+var VideoGalleryHeader = new Vue({
+    el: '#id_video_gallery_header',
+    data:{
+        count:0
+    }
+});
+
 /* 全局变量 结束*/
 
 /* 加载函数 开始 */
+function load_search_result() {
+    VideoGallery.videos = [];
+    VideoGallery.cur_page = 1;
+    VideoGallery.$nextTick(() => {
+        console.log('Reset Video Gallery');
+        VideoGallery.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+    });
+}
 function load_category_list() {
     Category.categories = [
         {name: '全部'}
@@ -139,13 +172,13 @@ function load_category_main() {
 function load_category_time(name) {
     var context = {'category': name};
     $.get(YEAR_URL, context, function (data, status) {
-        CategoryTime.categories = [
+        CategoryYear.categories = [
             {name: '全部'}
         ];
         $.each(data, function (index, value) {
-            CategoryTime.categories.push({name: value});
+            CategoryYear.categories.push({name: value});
         });
-        CategoryTime.active_name = '全部';
+        CategoryYear.active_name = '全部';
     })
 }
 function load_category_region(name) {
@@ -163,38 +196,38 @@ function load_category_region(name) {
 
 /*
  {
-    "count": 25,
-    "next": "http://127.0.0.1:8000/api/?page=2",
-    "previous": null,
-    "cur_page": 1,
-    "num_pages": 3,
-    "page_range": [
-        1,
-        2,
-        3
-    ],
-    "year": null,
-    "results": [
-        {
-            "id": 36,
-            "title": "Django-vod批量上传",
-            "image": "/media/hhy/browser-icon-chrome.png.200x300_q85_crop.png",
-            "category": "言情片  (level 2)",
-            "definition": "SD",
-            "duration": null,
-            "slug": "django-vodpi-liang-shang-chuan-24"
-        },
-        {
-            "id": 35,
-            "title": "Django-vod批量上传",
-            "image": "/media/hhy/browser-icon-chrome.png.200x300_q85_crop.png",
-            "category": "言情片  (level 2)",
-            "definition": "SD",
-            "duration": null,
-            "slug": "django-vodpi-liang-shang-chuan-23"
-        }
-    ]
-}
+ "count": 25,
+ "next": "http://127.0.0.1:8000/api/?page=2",
+ "previous": null,
+ "cur_page": 1,
+ "num_pages": 3,
+ "page_range": [
+ 1,
+ 2,
+ 3
+ ],
+ "year": null,
+ "results": [
+ {
+ "id": 36,
+ "title": "Django-vod批量上传",
+ "image": "/media/hhy/browser-icon-chrome.png.200x300_q85_crop.png",
+ "category": "言情片  (level 2)",
+ "definition": "SD",
+ "duration": null,
+ "slug": "django-vodpi-liang-shang-chuan-24"
+ },
+ {
+ "id": 35,
+ "title": "Django-vod批量上传",
+ "image": "/media/hhy/browser-icon-chrome.png.200x300_q85_crop.png",
+ "category": "言情片  (level 2)",
+ "definition": "SD",
+ "duration": null,
+ "slug": "django-vodpi-liang-shang-chuan-23"
+ }
+ ]
+ }
  */
 function load_video_list() {
     $.get(VIDEO_LIST_URL, function (data, status) {
@@ -204,7 +237,24 @@ function load_video_list() {
     })
 }
 /* 加载函数 结束 */
+/* 额外方法 开始 */
+function show_list_view() {
+    // myPlayer.pause();
+    // myPlayer.dispose();
+    if (myPlayer) {
+        myPlayer.dispose();
+        myPlayer = null;
+    }
+    $('#id_list').show();
+    $('#id_detail').hide();
 
+}
+function show_detail_view() {
+    $('#id_list').hide();
+    $('#id_detail').show();
+
+}
+/* 额外方法 结束 */
 
 //获得当前分类按钮上的文字
 function get_current_category_btn() {
@@ -226,14 +276,19 @@ function get_current_region_btn() {
 /* 初始化页面，获取初始数据 开始 */
 
 function InitPage() {
-    var current_category_main = window.location.hash;
+    var hash = window.location.hash;
     $.get(CATEGORY_URL, {}, function (data, status) {
         CategoryListData = data;
         load_category_main();
-        current_category_main = current_category_main.substring(1);
-        if (current_category_main !== '') CategoryMain.active_name = current_category_main;
-        CategoryMain.select(CategoryMain.active_name);
-        $('#id_category_list').find(':first-child').click();
+        hash = hash.substring(1);
+        if($.isNumeric(hash)){
+            load_video_detail(hash);
+        }
+        else if (hash !== ''){
+            CategoryMain.active_name = hash;
+            CategoryMain.select(CategoryMain.active_name);
+        }
+        // $('#id_category_list').find(':first-child').click();
     })
 }
 
