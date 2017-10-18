@@ -42,13 +42,18 @@ var CategoryAdvanced = {
     props: ['category_year', 'category_region'],
     data: function () {
         return {
-            active_name: '全部'
+            active_year: '全部',
+            active_region: '全部'
         }
     },
     methods: {
-        select: function (name) {
-            this.active_name = name;
+        select_year: function (name) {
+            this.active_year = name;
             App.active_year = name;
+        },
+        select_region: function (name) {
+            this.active_region = name;
+            App.active_region = name;
         }
     }
 };
@@ -97,6 +102,7 @@ var App = new Vue({
 router.beforeEach(function (to, from, next) {
     // console.log('router change');
     // load_category_list(to.params.main_category);
+    load_category_info(to.params.main_category);
     next();
 });
 
@@ -109,7 +115,12 @@ function load_category_main() {
         }
         App.main_categories.push({name: key});
     });
-    load_category_list(router.currentRoute.params.main_category)
+    load_category_info(router.currentRoute.params.main_category);
+}
+function load_category_info(main_category) {
+    load_category_list(main_category);
+    load_category_year(main_category);
+    load_category_region(main_category);
 }
 function load_category_list(active_name) {
     App.category_list = [
@@ -130,18 +141,18 @@ function load_category_year(name) {
         });
     })
 }
-// function load_category_region(name) {
-//     var context = {'category': name};
-//     $.get(REGION_URL, context, function (data, status) {
-//         CategoryRegion.categories = [
-//             {name: '全部'}
-//         ];
-//         $.each(data, function (index, value) {
-//             CategoryRegion.categories.push(value);
-//         });
-//         CategoryRegion.active_name = '全部';
-//     })
-// }
+function load_category_region(name) {
+    var context = {'category': name};
+    $.get(REGION_URL, context, function (data, status) {
+        App.category_region = [
+            {name: '全部'}
+        ];
+        $.each(data, function (index, value) {
+            App.category_region.push(value);
+        });
+        App.active_region = '全部';
+    })
+}
 $(function () {
     //InitPage();
     $.get(CATEGORY_URL, {}, function (data, status) {

@@ -152,7 +152,7 @@
     <div id="id_content" class="am-container">
         <router-view class="view" :category_list="category_list"></router-view>
         <router-view name="category_advanced" class="view" :category_region="category_region"
-         :category_year="category_year"></router-view>
+                     :category_year="category_year"></router-view>
     </div>
 </div>
 <template id="id_category_list">
@@ -169,28 +169,30 @@
     </div>
 </template>
 <template id="id_category_advanced">
-<div class="am-panel am-panel-default" style="text-align: left;">
-    <div class="am-panel-hd">
-        <h4 class="am-panel-title am-text-center" data-am-collapse="{target: '#id_advanced'}">
-            其他选项
-        </h4>
-    </div>
-    <div class="am-collapse am-panel-bd  am_category_container am-text-nowrap" id="id_advanced">
-        <span class="am-inline">时间:</span>
-        <div class="m-category-list am-inline">
-            <button v-for="category in category_year" type="button" class="am-btn am-round am_category_btn"
-                    @click="select(category.name)" :class="{'am-btn-success':active_name === category.name}">
-                {{category.name}}
-            </button>
-        </div>        <br>
-        <span class="am-inline">地区:</span>
-        <div class="m-category-list am-inline">
-            <button v-for="category in category_region" type="button" class="am-btn am-round am_category_btn">
-                {{category.name}}
-            </button>
+    <div class="am-panel am-panel-default" style="text-align: left;">
+        <div class="am-panel-hd">
+            <h4 class="am-panel-title am-text-center" data-am-collapse="{target: '#id_advanced'}">
+                其他选项
+            </h4>
+        </div>
+        <div class="am-collapse am-panel-bd  am_category_container am-text-nowrap" id="id_advanced">
+            <span class="am-inline">时间:</span>
+            <div class="m-category-list am-inline">
+                <button v-for="category in category_year" type="button" class="am-btn am-round am_category_btn"
+                        @click="select_year(category.name)" :class="{'am-btn-success':active_year === category.name}">
+                    {{category.name}}
+                </button>
+            </div>
+            <br>
+            <span class="am-inline">地区:</span>
+            <div class="m-category-list am-inline">
+                <button v-for="category in category_region" type="button" class="am-btn am-round am_category_btn"
+                        @click="select_region(category.name)" :class="{'am-btn-success':active_region === category.name}">
+                    {{category.name}}
+                </button>
+            </div>
         </div>
     </div>
-</div>
 </template>
 <template>
     <!--额外过滤选项 -->
