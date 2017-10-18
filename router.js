@@ -15,6 +15,7 @@ const DEFAULT_SELECT_DATA = {
     region: '全部'
 };
 var CategoryListData;
+var IScroll = $.AMUI.iScroll;
 var myPlayer;
 var curData = DEFAULT_SELECT_DATA;
 /* Vue对象 */
@@ -34,6 +35,7 @@ var CategoryList = {
         select: function (name) {
             this.active_name = name;
             App.active_list = name;
+            load_search_result();
         }
     }
 };
@@ -50,11 +52,126 @@ var CategoryAdvanced = {
         select_year: function (name) {
             this.active_year = name;
             App.active_year = name;
+            load_search_result();
         },
         select_region: function (name) {
             this.active_region = name;
             App.active_region = name;
+            load_search_result();
         }
+    },
+    mounted:function () {
+    }
+};
+var VideoItem = {
+    template: '#id_video_item',
+    props: ['video'],
+    computed: {
+        full_image_url: function () {
+            return URL_PREFIX + this.video.image;
+        }
+    },
+    methods:{
+        selectVideo:function (id) {
+            router.push({path: `/vod/${id}`});
+            console.log('select video '+id)
+        }
+    }
+};
+var VideoListData = {
+    videos:[],
+    cur_page: 1,
+    num_pages: 0,
+    count:0
+};
+var VideoList = {
+    template: '#id_video_list',
+    props: [],
+    components:{
+        'video-item':VideoItem
+    },
+    data:function () {
+        return VideoListData;
+    },
+    mounted:function () {
+        console.log('Video List Created');
+        var _video_list = this;
+        Bus.$on('resetInfinite', function () {
+            _video_list.resetInfinite(_video_list);
+        })
+    },
+    beforeDestroy:function () {
+      console.log('video list before destroy')
+    },
+    methods:{
+        infiniteHandler: function ($state) {
+            var vue = this;
+            // if(vue.num_pages === 0){
+            //     $state.complete();
+            //     return null;
+            // }
+            var context = {
+                'page': vue.cur_page,
+                'main_category': router.currentRoute.params.main_category,
+                'category': App.active_list,
+                'year': App.active_year,
+                'region': App.active_region,
+                'search': App.search_word
+            };
+            console.log(context);
+            $.get(VIDEO_LIST_URL, context, function (data, status) {
+                vue.count = data['count'];
+                vue.cur_page = data['cur_page'];
+                vue.num_pages = data['num_pages'];
+                $.each(data['results'], function (index, value) {
+                    vue.videos.push(value);
+                });
+                if (vue.cur_page === vue.num_pages) {
+                    $state.complete();
+                } else {
+                    console.log('cur_page=' + vue.cur_page);
+                    $state.loaded();
+                    vue.cur_page++;
+                }
+            });
+        },
+        resetInfinite: function (object) {
+            var _video_list = object;
+            _video_list.videos = [];
+            _video_list.cur_page = 1;
+            _video_list.num_pages = 1;
+            _video_list.$nextTick(function(){
+                console.log('Reset Video Gallery');
+                _video_list.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+            });
+        }
+    },
+    beforeRouteUpdate:function (to, from, next) {
+        console.log('video list reused!');
+        load_category_info(to.params.main_category);
+        load_search_result();
+        next();
+    }
+};
+var VideoContainer = {
+    template: '#id_detail',
+    props : ['video'],
+    data:function () {
+        return {
+            active_name:''
+        }
+    },
+    methods:{
+        load_video: function (video_url) {
+            create_video(video_url);
+        },
+        select: function (name) {
+            this.active_name = name;
+        }
+    },
+    mounted:function () {
+        console.log('video detail mounted');
+        load_video_detail(router.currentRoute.params.id);
     }
 };
 var router = new VueRouter({
@@ -72,18 +189,32 @@ var router = new VueRouter({
             }
         },
         {
-            path: '/:main_category',
+            path:'/vod/:id',
+            name:'video_detail',
+            components:{
+                video_detail: VideoContainer
+            },
+            props:{
+                video_detail:true
+            }
+        },
+        {
+            path: '/list/:main_category',
             components: {
                 default: CategoryList,
-                category_advanced: CategoryAdvanced
+                category_advanced: CategoryAdvanced,
+                video_list: VideoList
             },
             props: {
                 default: true,
-                category_advanced: true
+                category_advanced: true,
+                video_list: true
             }
         }
+
     ]
 });
+var Bus = new Vue();
 var App = new Vue({
     el: '#id_app',
     router: router,
@@ -96,15 +227,25 @@ var App = new Vue({
         category_list: [],
         category_year: [],
         category_region: [],
-        search_word: ''
+        search_word: '',
+        video:{}
+    },
+    methods:{
+        onSubmit:function () {
+
+            load_search_result();
+        }
     }
 });
-router.beforeEach(function (to, from, next) {
-    // console.log('router change');
-    // load_category_list(to.params.main_category);
-    load_category_info(to.params.main_category);
-    next();
-});
+// router.beforeEach(function (to, from, next) {
+//     // load_category_info(to.params.main_category);
+//     // load_search_result();
+//     // next();
+//     load_category_info(to.params.main_category);
+//     // load_search_result();
+//     console.log('success');
+//     next();
+// });
 
 function load_category_main() {
     var first = true;
@@ -152,6 +293,48 @@ function load_category_region(name) {
         });
         App.active_region = '全部';
     })
+}
+function load_search_result(){
+    Bus.$emit('resetInfinite');
+}
+function load_video_detail(id) {
+    var url = VIDEO_DETAIL_URL + id;
+    $.get(url, function (data, status) {
+        App.video = data;
+        create_video(App.video.video);
+    });
+}
+function create_video_detail_html() {
+    return "<video id='id_video_js' class='video-js'></video>"
+}
+function create_video(video_url) {
+    // myPlayer = videojs('id_video_js',{},function () {
+    //     alert('setup videojs');
+    // });
+
+    // if (myPlayer) {
+    //     myPlayer.pause();
+    //     setTimeout(function() {
+    //         myPlayer.dispose();
+    //         myPlayer = null;
+    //     }, 0);
+    // }
+    $('#id_video_container').html(create_video_detail_html());
+    myPlayer = videojs(document.getElementById('id_video_js'), {
+        controls: true,
+        autoplay: false,
+        preload: 'auto',
+        width: '100%',
+        height: '100%'
+    }, function () {
+        console.log('setup videojs');
+    });
+    myPlayer.pause();
+    myPlayer.src({
+        src: video_url,
+        type: 'video/mp4',
+        withCredentials: false
+    });
 }
 $(function () {
     //InitPage();
