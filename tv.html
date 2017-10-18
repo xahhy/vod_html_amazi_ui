@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <title>南海视频点播系统</title>
+
+    <!-- Set render engine for 360 browser -->
+    <meta name="renderer" content="webkit">
+
+    <!-- No Baidu Siteapp-->
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+
+    <link rel="icon" type="image/png" href="assets_amazi/i/favicon.png">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="192x192" href="assets_amazi/i/app-icon72x72@2x.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="apple-touch-icon-precomposed" href="assets_amazi/i/app-icon72x72@2x.png">
+
+    <!-- Tile icon for Win8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="assets_amazi/i/app-icon72x72@2x.png">
+    <meta name="msapplication-TileColor" content="#0e90d2">
+
+    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
+    <!--
+    <link rel="canonical" href="http://www.example.com/">
+  -->
+    <link rel="stylesheet" href="dist_flat/css/flat-ui.min.css">
+    <link rel="stylesheet" href="assets_amazi/css/amazeui.min.css">
+    <link rel="stylesheet" href="assets_amazi/css/app.css">
+    <script src="assets_amazi/js/jquery-3.2.1.min.js"></script>
+    <script src="assets_amazi/js/amazeui.min.js"></script>
+    <script src="vue.js"></script>
+    <script src="vue-infinite-loading.js"></script>
+    <script src="dist_flat/js/flat-ui.js"></script>
+    <script src="dist_flat/js/vendor/video.js"></script>
+    <script src="vue-select.js"></script>
+    <script>
+        videojs.options.flash.swf = "dist_flat/js/vendor/video-js.swf"
+    </script>
+    <style>
+        .am_list_block {
+            padding: 10px;
+            background: #fff;
+            position: relative;
+        }
+
+        .am_img_bg {
+            display: block;
+        }
+
+        .am_listimg_info {
+            color: #d1d1d1;
+            padding-top: 5px;
+        }
+
+        .am_imglist_time {
+            position: absolute;
+            bottom: 11px;
+            right: 10px;
+            margin-right: 0;
+        }
+
+        .am_category_btn {
+            margin: 5px 5px;
+            display: inline-block;
+        }
+
+        .am_category_container {
+            overflow: auto;
+
+        }
+
+        ::-webkit-scrollbar { /*隐藏滚轮*/
+            display: none;
+        }
+
+        .am_display_none {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<header class="am-topbar">
+    <h1 class="am-topbar-brand">
+        <a href="#">导航页</a>
+    </h1>
+
+    <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only"
+            data-am-collapse="{target: '#doc-topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span
+            class="am-icon-bars"></span></button>
+
+    <div class="am-collapse am-topbar-collapse am-text-center" id="doc-topbar-collapse">
+        <ul id="id_category_main" class="am-nav am-nav-pills am-topbar-nav am-text-center">
+            <li v-for="category in categories" :class="{'am-active': active_name == category.name}"
+                :name="category.name">
+                <a :href="gen_hash(category.name)" @click="select(category.name)">{{category.name}}</a>
+            </li>
+        </ul>
+
+        <form id="id_search_form" @submit.prevent="onSubmit" class="am-topbar-form am-topbar-left am-form-inline" role="search">
+            <!--<div class="am-form-group">-->
+            <!--<input type="text" class="am-form-field am-input-sm" placeholder="搜索">-->
+            <!--</div>-->
+            <div class="am-g">
+                <div class="am-u-lg-12">
+                    <div class="am-input-group">
+                        <span class="am-input-group-btn">
+                        <button class="am-btn am-btn-default" type="submit"><span class="am-icon-search"></span> </button>
+                        </span>
+                        <input type="text" class="am-form-field am-input-lg" v-model="search_word">
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="am-topbar-right">
+            <button class="am-btn am-btn-primary am-topbar-btn am-btn-sm">系统管理</button>
+        </div>
+    </div>
+</header>
+<div id="id_tv" class="am-container">
+    <div class="am-panel am-panel-default" style="text-align: left;">
+        <div id="id_channel_select" class="am-panel-bd">
+            <span class="am-inline">选择频道:</span>
+            <span>
+                <v-select :on-change="select_channel" v-model="selected" :options="options" label="channel_name" class=""></v-select>
+            </span>
+        </div>
+        <div id="id_category_select" class="am-panel-bd">
+            <span class="am-inline">选择栏目:</span>
+            <span>
+                <v-select :on-change="select_category" v-model="selected" :options="options" label="channel_id" class=""></v-select>
+            </span>
+        </div>
+    </div>
+</div>
+<div id="id_list" class="am-container">
+    <div class="am-panel am-panel-default" style="text-align: left;">
+        <div id="id_category_list" class="am-panel-bd am-text-nowrap am_category_container">
+            <span class="am-inline">分类:</span>
+            <div class="m-category-list am-inline">
+                <button v-for="category in categories"
+                        :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}"
+                        @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
+                    {{category.name}}
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 额外过滤选项 -->
+    <div class="am-panel am-panel-default" style="text-align: left;">
+        <div class="am-panel-hd">
+            <h4 class="am-panel-title am-text-center" data-am-collapse="{target: '#id_advanced'}">
+                其他选项
+            </h4>
+        </div>
+        <div class="am-collapse am-panel-bd  am_category_container am-text-nowrap" id="id_advanced">
+            <p class="am-inline">时间:</p>
+            <div id="id_category_time" class="m-time-list am-inline">
+                <button v-for="category in categories"
+                        :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}"
+                        @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
+                    {{category.name}}
+                </button>
+            </div>
+            <br/>
+            <p class="am-inline">地区:</p>
+            <div id="id_category_region" class="m-region-list am-inline am_category_container">
+                <button v-for="category in categories"
+                        :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}"
+                        @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
+                    {{category.name}}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频列表 -->
+    <div class="am-panel am-panel-default" style="text-align: left;">
+        <div id="id_video_gallery_header" class="am-panel-hd">
+            <span class="am-text-left">搜索结果</span>
+            <span class="am-text-right" style="float: right;">共{{count}}个搜索结果</span>
+        </div>
+        <div class="am-panel-bd">
+            <ul id="id_video_gallery" data-am-widget="gallery"
+                class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered am-no-layout">
+                <li v-for="video in videos">
+                    <div>
+                        <video-item :video="video"></video-item>
+                    </div>
+                </li>
+                <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading"></infinite-loading>
+            </ul>
+
+        </div>
+    </div>
+
+</div>
+<div id="id_detail" class="am-container">
+    <div class="am-panel am-panel-default">
+        <header class="am-panel-hd">
+            <h3 class="am-panel-title">
+                <span class="am-badge am-badge-success am-text-lg am-round">{{video.category}}</span>
+                <span class="am-badge am-text-lg am-round">{{video.title}}</span>
+                <span class="am-badge am-badge-warning am-text-lg am-round">{{video.definition}}</span></h3>
+        </header>
+        <div class="am-panel-bd">
+            <div id="id_video_container">
+                <video id="id_video_js" class="video-js"></video>
+            </div>
+        </div>
+
+    </div>
+    <div class="am-panel am-panel-default">
+        <header class="am-panel-hd">
+            <h3 class="am-panel-title">
+                选集
+            </h3>
+        </header>
+        <div class="am-panel-bd">
+            <button v-for="video_child in video.video_list" class="am-btn am-btn-default am_category_btn am-btn-lg"
+                    @click="load_video(video_child.video);select(video_child.description)"
+                    :class="{'am-btn-success':active_name == video_child.description}">{{video_child.description}}
+            </button>
+        </div>
+    </div>
+    <div class="am-panel am-panel-default">
+        <header class="am-panel-hd">
+            <h3 class="am-panel-title">
+                简介
+            </h3>
+        </header>
+        <div class="am-panel-bd">
+            {{video.description}}
+        </div>
+    </div>
+</div>
+<template id="id_video_item_tpl">
+    <!--<div class="am-gallery-item am_list_block">-->
+    <div class="am-gallery-item">
+        <a href="#" class="" @click.prevent="select(video.id)">
+            <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
+            <h3 class="am-gallery-title">{{video.title}}</h3>
+            <div class="am_listimg_info">
+                <span class="am-icon-heart">{{video.definition}}</span>
+            </div>
+        </a>
+    </div>
+</template>
+
+<div data-am-widget="gotop" class="am-gotop am-gotop-fixed">
+    <a href="#top" title="">
+        <i class="am-gotop-icon am-icon-chevron-up"></i>
+    </a>
+</div>
+<script src="app.js"></script>
+<script src="detail.js"></script>
+<script src="search.js"></script>
+<script src="tv.js"></script>
+</body>
+</html>
