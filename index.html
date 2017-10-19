@@ -45,6 +45,8 @@
     <script src="vue-router.js"></script>
     <script src="dist_flat/js/flat-ui.js"></script>
     <script src="dist_flat/js/vendor/video.js"></script>
+    <script src="vue-select.js"></script>
+
     <!--<script src="iscroll.js"></script>-->
     <script>
         videojs.options.flash.swf = "dist_flat/js/vendor/video-js.swf"
@@ -109,6 +111,7 @@
                 <router-link :to="'/list/'+category.name" tag="li" v-for="category in main_categories">
                     <a>{{category.name}}</a>
                 </router-link>
+                <router-link to="/tv" tag="li"><a>电视回看</a></router-link>
                 <!--</li>-->
 
                 <!--<li class="am-dropdown" data-am-dropdown>-->
@@ -152,17 +155,18 @@
     </header>
     <div id="id_content" class="am-container">
         <keep-alive>
-            <router-view class="view" :category_list="category_list" exact></router-view>
+            <router-view class="view" :category_list="category_list"></router-view>
         </keep-alive>
         <keep-alive>
             <router-view name="category_advanced" class="view" :category_region="category_region"
-                         :category_year="category_year" exact></router-view>
+                         :category_year="category_year"></router-view>
         </keep-alive>
 
         <keep-alive>
-            <router-view name="video_list" class="view" exact></router-view>
+            <router-view name="video_list" class="view"></router-view>
         </keep-alive>
-        <router-view name="video_detail" class="view" :video="video" exact></router-view>
+        <router-view name="video_detail" class="view" :video="video"></router-view>
+        <router-view name="tv_category" class="view"></router-view>
 
     </div>
 </div>
@@ -281,6 +285,19 @@
                 <span class="am-icon-heart">{{video.definition}}</span>
             </div>
         </a>
+    </div>
+</template>
+
+<template id="id_tv">
+    <div class="am-container">
+        <div class="am-panel am-panel-default" style="text-align: left;">
+            <div id="id_channel_select" class="am-panel-bd">
+                <span class="am-inline">选择频道:</span>
+                <span>
+                <v-select :on-change="select_channel" v-model="selected" :options="options" label="channel_name" class=""></v-select>
+            </span>
+            </div>
+        </div>
     </div>
 </template>
 

@@ -19,6 +19,7 @@ var IScroll = $.AMUI.iScroll;
 var myPlayer;
 var curData = DEFAULT_SELECT_DATA;
 /* Vue对象 */
+Vue.component('v-select', VueSelect.VueSelect);
 var HomeView = {
     name: 'Home',
     template: '<div>Home</div>'
@@ -174,6 +175,28 @@ var VideoContainer = {
         load_video_detail(router.currentRoute.params.id);
     }
 };
+var TVCategory = {
+    template: '#id_tv',
+    methods:{
+        select_channel: function (data) {
+            console.log(data.channel_id);
+        }
+    },
+    data:function () {
+        return {
+            options:[{channel_id:'全部',channel_name:'全部'}],
+            selected:'全部'
+        }
+    },
+    mounted:function () {
+        console.log('TV Category mounted');
+        var _tv_category = this;
+        $.get(URL_PREFIX+'/tv/api/channels',function(data, status){
+            _tv_category.options=[{channel_id:'全部', channel_name:'全部'}];
+            _tv_category.options = _tv_category.options.concat(data);
+        });
+    }
+};
 var router = new VueRouter({
     mode: 'hash',
     base: window.location.href,
@@ -209,6 +232,15 @@ var router = new VueRouter({
                 default: true,
                 category_advanced: true,
                 video_list: true
+            }
+        },
+        {
+            path: '/tv',
+            components:{
+                tv_category: TVCategory
+            },
+            props:{
+                tv_category: true
             }
         }
 
