@@ -3,12 +3,12 @@
  */
 'use strict';
 /* 全局变量 开始*/
-const URL_PREFIX = 'http://192.168.0.145:8000';
-const CATEGORY_URL = URL_PREFIX + '/api/category';
-const YEAR_URL = URL_PREFIX + '/api/year';
-const REGION_URL = URL_PREFIX + '/api/region';
-const VIDEO_LIST_URL = URL_PREFIX + '/api';
-const VIDEO_DETAIL_URL = URL_PREFIX + '/api/';
+const URL_PREFIX = 'http://localhost:8000';
+const CATEGORY_URL = URL_PREFIX + '/vod/api/category';
+const YEAR_URL = URL_PREFIX + '/vod/api/year';
+const REGION_URL = URL_PREFIX + '/vod/api/region';
+const VIDEO_LIST_URL = URL_PREFIX + '/vod/api';
+const VIDEO_DETAIL_URL = URL_PREFIX + '/vod/api/';
 var CategoryListData;
 var myPlayer;
 /* Vue对象 */
