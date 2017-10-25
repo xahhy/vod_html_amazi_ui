@@ -300,7 +300,40 @@
         </div>
     </div>
 </template>
-
+<template id="id_tv_list">
+    <!--额外过滤选项 -->
+    <div class="am-panel am-panel-default" style="text-align: left;">
+        <div class="am-panel-hd">
+            <span class="am-text-left">搜索结果</span>
+            <span class="am-text-right" style="float: right;">共{{count}}个搜索结果</span>
+        </div>
+        <div class="am-panel-bd">
+            <ul data-am-widget="gallery"
+                class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered am-no-layout">
+                <li v-for="video in videos">
+                    <div>
+                        <video-item :video="video"></video-item>
+                    </div>
+                </li>
+                <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading">
+                    <span slot="no-results">没有更多的视频了:)</span>
+                </infinite-loading>
+            </ul>
+        </div>
+    </div>
+</template>
+<template id="id_tv_item">
+    <!--<div class="am-gallery-item am_list_block">-->
+    <div class="am-gallery-item">
+        <a href="#" class="" @click.prevent="selectVideo(video.id)">
+            <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
+            <h3 class="am-gallery-title">{{video.title}}</h3>
+            <div class="am_listimg_info">
+                <span class="am-icon-heart">{{video.definition}}</span>
+            </div>
+        </a>
+    </div>
+</template>
 <div data-am-widget="gotop" class="am-gotop am-gotop-fixed">
     <a href="#top" title="">
         <i class="am-gotop-icon am-icon-chevron-up"></i>
