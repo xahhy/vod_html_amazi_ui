@@ -3,7 +3,7 @@
  */
 'use strict';
 /* 全局变量 开始*/
-const URL_PREFIX = 'http://192.168.0.145:8000';
+const URL_PREFIX = 'http://localhost:8000';
 const CATEGORY_URL = URL_PREFIX + '/vod/api/category';
 const YEAR_URL = URL_PREFIX + '/vod/api/year';
 const REGION_URL = URL_PREFIX + '/vod/api/region';
@@ -12,26 +12,7 @@ const VIDEO_DETAIL_URL = URL_PREFIX + '/vod/api/';
 var CategoryListData;
 var myPlayer;
 /* Vue对象 */
-var CategoryList = {
-    name: 'Content',
-    template: '#id_category_list',
-    components:{
-        'category-list': CategoryList
-    }
-};
-var CategoryYear = {
-    name: 'CategoryList',
-    template: '#id_list',
-    props:['categories']
 
-};
-var router = new VueRouter({
-   mode: 'hash',
-    base: window.location.href,
-    routes:[
-        {path: '/:main_category',component:ContentView}
-    ]
-});
 var Category = new Vue({
     el: '#id_category_list',
     data: {
@@ -305,17 +286,17 @@ function InitPage() {
     $.get(CATEGORY_URL, {}, function (data, status) {
         CategoryListData = data;
         load_category_main();
-        // hash = hash.substring(1);
-        // if($.isNumeric(hash)){
-        //     load_video_detail(hash);
-        // }
-        // else if (hash !== ''){
-        //     CategoryMain.active_name = hash;
-        //     CategoryMain.select(CategoryMain.active_name);
-        // }
-        // else{
-        //     CategoryMain.select(CategoryMain.active_name);
-        // }
+        hash = hash.substring(1);
+        if($.isNumeric(hash)){
+            load_video_detail(hash);
+        }
+        else if (hash !== ''){
+            CategoryMain.active_name = hash;
+            CategoryMain.select(CategoryMain.active_name);
+        }
+        else{
+            CategoryMain.select(CategoryMain.active_name);
+        }
         // $('#id_category_list').find(':first-child').click();
     })
 }
