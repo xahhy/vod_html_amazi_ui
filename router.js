@@ -162,12 +162,17 @@ var VideoContainer = {
             active_name:''
         }
     },
+    computed:{
+    },
     methods:{
         load_video: function (video_url) {
             create_video(video_url);
         },
         select: function (name) {
             this.active_name = name;
+        },
+        change_description: function(video) {
+            this.video.description = video.description;
         }
     },
     mounted:function () {
