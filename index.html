@@ -42,8 +42,12 @@
     <script src="assets_amazi/js/amazeui.min.js"></script>
     <script src="vue.js"></script>
     <script src="vue-infinite-loading.js"></script>
+    <script src="vue-router.js"></script>
     <script src="dist_flat/js/flat-ui.js"></script>
     <script src="dist_flat/js/vendor/video.js"></script>
+    <script src="vue-select.js"></script>
+
+    <!--<script src="iscroll.js"></script>-->
     <script>
         videojs.options.flash.swf = "dist_flat/js/vendor/video-js.swf"
     </script>
@@ -80,9 +84,9 @@
 
         }
 
-        ::-webkit-scrollbar { /*隐藏滚轮*/
-            display: none;
-        }
+        /*::-webkit-scrollbar { !*隐藏滚轮*!*/
+        /*display: none;*/
+        /*}*/
 
         .am_display_none {
             display: none;
@@ -90,109 +94,133 @@
     </style>
 </head>
 <body>
-<header class="am-topbar">
-    <h1 class="am-topbar-brand">
-        <a href="#">导航页</a>
-    </h1>
+<div id="id_app">
+    <header class="am-topbar">
+        <h1 class="am-topbar-brand">
+            <a href="#">导航页</a>
+        </h1>
 
-    <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only"
-            data-am-collapse="{target: '#doc-topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span
-            class="am-icon-bars"></span></button>
+        <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only"
+                data-am-collapse="{target: '#doc-topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span
+                class="am-icon-bars"></span></button>
 
-    <div class="am-collapse am-topbar-collapse am-text-center" id="doc-topbar-collapse">
-        <ul id="id_category_main" class="am-nav am-nav-pills am-topbar-nav am-text-center">
-            <li v-for="category in categories" :class="{'am-active': active_name == category.name}"
-                :name="category.name">
-                <a :href="gen_hash(category.name)" @click="select(category.name)">{{category.name}}</a>
-            </li>
+        <div class="am-collapse am-topbar-collapse am-text-center" id="doc-topbar-collapse">
+            <ul id="id_category_main" class="am-nav am-nav-pills am-topbar-nav am-text-center">
+                <!--<li v-for="category in main_categories">-->
+                <!--<a :href="gen_hash(category.name)" @click="select(category.name)">{{category.name}}</a>-->
+                <router-link :to="'/list/'+category.name" tag="li" v-for="category in main_categories">
+                    <a>{{category.name}}</a>
+                </router-link>
+                <router-link to="/tv" tag="li"><a>电视回看</a></router-link>
+                <!--</li>-->
 
-            <!--<li class="am-dropdown" data-am-dropdown>-->
-            <!--<a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">-->
-            <!--下拉 <span class="am-icon-caret-down"></span>-->
-            <!--</a>-->
-            <!--<ul class="am-dropdown-content">-->
-            <!--<li class="am-dropdown-header">标题</li>-->
-            <!--<li><a href="#">1. 去月球</a></li>-->
-            <!--<li class="am-active"><a href="#">2. 去火星</a></li>-->
-            <!--<li><a href="#">3. 还是回地球</a></li>-->
-            <!--<li class="am-disabled"><a href="#">4. 下地狱</a></li>-->
-            <!--<li class="am-divider"></li>-->
-            <!--<li><a href="#">5. 桥头一回首</a></li>-->
-            <!--</ul>-->
-            <!--</li>-->
-        </ul>
+                <!--<li class="am-dropdown" data-am-dropdown>-->
+                <!--<a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">-->
+                <!--下拉 <span class="am-icon-caret-down"></span>-->
+                <!--</a>-->
+                <!--<ul class="am-dropdown-content">-->
+                <!--<li class="am-dropdown-header">标题</li>-->
+                <!--<li><a href="#">1. 去月球</a></li>-->
+                <!--<li class="am-active"><a href="#">2. 去火星</a></li>-->
+                <!--<li><a href="#">3. 还是回地球</a></li>-->
+                <!--<li class="am-disabled"><a href="#">4. 下地狱</a></li>-->
+                <!--<li class="am-divider"></li>-->
+                <!--<li><a href="#">5. 桥头一回首</a></li>-->
+                <!--</ul>-->
+                <!--</li>-->
+            </ul>
 
-        <form id="id_search_form" @submit.prevent="onSubmit" class="am-topbar-form am-topbar-left am-form-inline" role="search">
-            <!--<div class="am-form-group">-->
-            <!--<input type="text" class="am-form-field am-input-sm" placeholder="搜索">-->
-            <!--</div>-->
-            <div class="am-g">
-                <div class="am-u-lg-12">
-                    <div class="am-input-group">
+            <form id="id_search_form" @submit.prevent="onSubmit" class="am-topbar-form am-topbar-left am-form-inline"
+                  role="search">
+                <!--<div class="am-form-group">-->
+                <!--<input type="text" class="am-form-field am-input-sm" placeholder="搜索">-->
+                <!--</div>-->
+                <div class="am-g">
+                    <div class="am-u-lg-12">
+                        <div class="am-input-group">
                         <span class="am-input-group-btn">
-                        <button class="am-btn am-btn-default" type="submit"><span class="am-icon-search"></span> </button>
+                        <button class="am-btn am-btn-default" type="submit"><span
+                                class="am-icon-search"></span> </button>
                         </span>
-                        <input type="text" class="am-form-field am-input-lg" v-model="search_word">
+                            <input type="text" class="am-form-field am-input-lg" v-model="search_word">
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
 
-        <div class="am-topbar-right">
-            <button id="id_admin_btn" class="am-btn am-btn-primary am-topbar-btn am-btn-sm">系统管理</button>
+            <div class="am-topbar-right">
+                <button class="am-btn am-btn-primary am-topbar-btn am-btn-sm">系统管理</button>
+            </div>
         </div>
+    </header>
+    <div id="id_content" class="am-container">
+        <keep-alive>
+            <router-view class="view" :category_list="category_list"></router-view>
+        </keep-alive>
+        <keep-alive>
+            <router-view name="category_advanced" class="view" :category_region="category_region"
+                         :category_year="category_year"></router-view>
+        </keep-alive>
+
+        <keep-alive>
+            <router-view name="video_list" class="view"></router-view>
+        </keep-alive>
+        <router-view name="video_detail" class="view" :video="video"></router-view>
+        <router-view name="tv_category" class="view"></router-view>
+
     </div>
-</header>
-<div id="id_list" class="am-container">
+</div>
+<template id="id_category_list">
     <div class="am-panel am-panel-default" style="text-align: left;">
-        <div id="id_category_list" class="am-panel-bd am-text-nowrap am_category_container">
+        <div class="am-panel-bd am-text-nowrap am_category_container">
             <span class="am-inline">分类:</span>
             <div class="m-category-list am-inline">
-                <button v-for="category in categories"
-                        :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}"
-                        @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
+                <button v-for="category in category_list" type="button" class="am-btn am-round am_category_btn "
+                        @click="select(category.name)" :class="{'am-btn-success':active_name === category.name}">
                     {{category.name}}
                 </button>
-
             </div>
         </div>
     </div>
-
-    <!-- 额外过滤选项 -->
+</template>
+<template id="id_category_advanced">
     <div class="am-panel am-panel-default" style="text-align: left;">
         <div class="am-panel-hd">
             <h4 class="am-panel-title am-text-center" data-am-collapse="{target: '#id_advanced'}">
                 其他选项
             </h4>
         </div>
-        <div class="am-collapse am-panel-bd  am_category_container am-text-nowrap" id="id_advanced">
-            <p class="am-inline">时间:</p>
-            <div id="id_category_time" class="m-time-list am-inline">
-                <button v-for="category in categories"
-                        :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}"
-                        @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
-                    {{category.name}}
-                </button>
-            </div>
-            <br/>
-            <p class="am-inline">地区:</p>
-            <div id="id_category_region" class="m-region-list am-inline am_category_container">
-                <button v-for="category in categories"
-                        :class="{'am-btn-primary':(active_name == category.name),'am-btn-default':(active_name != category.name)}"
-                        @click="select(category.name)" type="button" class="am-btn am-round am_category_btn">
-                    {{category.name}}
-                </button>
+        <div id="id_my_scroll">
+            <div class="am-collapse am-panel-bd  am_category_container am-text-nowrap" id="id_advanced">
+                <span class="am-inline">时间:</span>
+                <div class="m-category-list am-inline">
+                    <button v-for="category in category_year" type="button" class="am-btn am-round am_category_btn"
+                            @click="select_year(category.name)"
+                            :class="{'am-btn-success':active_year === category.name}">
+                        {{category.name}}
+                    </button>
+                </div>
+                <br>
+                <span class="am-inline">地区:</span>
+                <div class="m-category-list am-inline">
+                    <button v-for="category in category_region" type="button" class="am-btn am-round am_category_btn"
+                            @click="select_region(category.name)"
+                            :class="{'am-btn-success':active_region === category.name}">
+                        {{category.name}}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- 视频列表 -->
+</template>
+<template id="id_video_list">
+    <!--额外过滤选项 -->
     <div class="am-panel am-panel-default" style="text-align: left;">
         <div id="id_video_gallery_header" class="am-panel-hd">
             <span class="am-text-left">搜索结果</span>
             <span class="am-text-right" style="float: right;">共{{count}}个搜索结果</span>
         </div>
-        <div class="am-panel-bd">
+        <div class="am-panel-bd" id="id_content_scroll">
             <ul id="id_video_gallery" data-am-widget="gallery"
                 class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered am-no-layout">
                 <li v-for="video in videos">
@@ -200,56 +228,57 @@
                         <video-item :video="video"></video-item>
                     </div>
                 </li>
-                <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading"></infinite-loading>
+                <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading">
+                    <span slot="no-results">没有更多的视频了:)</span>
+                </infinite-loading>
             </ul>
-
         </div>
     </div>
-
-</div>
-<div id="id_detail" class="am-container">
-    <div class="am-panel am-panel-default">
-        <header class="am-panel-hd">
-            <h3 class="am-panel-title">
-                <span class="am-badge am-badge-success am-text-lg am-round">{{video.category}}</span>
-                <span class="am-badge am-text-lg am-round">{{video.title}}</span>
-                <span class="am-badge am-badge-warning am-text-lg am-round">{{video.definition}}</span></h3>
-        </header>
-        <div class="am-panel-bd">
-            <div id="id_video_container">
-                <video id="id_video_js" class="video-js"></video>
+</template>
+<template id="id_detail">
+    <div class="am-container">
+        <div class="am-panel am-panel-default">
+            <header class="am-panel-hd">
+                <h3 class="am-panel-title">
+                    <span class="am-badge am-badge-success am-text-lg am-round">{{video.category}}</span>
+                    <span class="am-badge am-text-lg am-round">{{video.title}}</span>
+                    <span class="am-badge am-badge-warning am-text-lg am-round">{{video.definition}}</span></h3>
+            </header>
+            <div class="am-panel-bd">
+                <div id="id_video_container">
+                    <video id="id_video_js" class="video-js"></video>
+                </div>
             </div>
         </div>
-
-    </div>
-    <div class="am-panel am-panel-default">
-        <header class="am-panel-hd">
-            <h3 class="am-panel-title">
-                选集
-            </h3>
-        </header>
-        <div class="am-panel-bd">
-            <button v-for="video_child in video.video_list" class="am-btn am-btn-default am_category_btn am-btn-lg"
-                    @click="load_video(video_child.video);select(video_child.description)"
-                    :class="{'am-btn-success':active_name == video_child.description}">{{video_child.description}}
-            </button>
+        <div class="am-panel am-panel-default">
+            <header class="am-panel-hd">
+                <h3 class="am-panel-title">
+                    选集
+                </h3>
+            </header>
+            <div class="am-panel-bd">
+                <button v-for="(video_child,index) in video.video_list" class="am-btn am-btn-default am_category_btn am-btn-lg"
+                        @click="load_video(video_child.video);select(index);change_description(video_child)"
+                        :class="{'am-btn-success':active_name == index}">{{video_child.select_name}}
+                </button>
+            </div>
+        </div>
+        <div class="am-panel am-panel-default">
+            <header class="am-panel-hd">
+                <h3 class="am-panel-title">
+                    简介
+                </h3>
+            </header>
+            <div class="am-panel-bd">
+                {{video.description}}
+            </div>
         </div>
     </div>
-    <div class="am-panel am-panel-default">
-        <header class="am-panel-hd">
-            <h3 class="am-panel-title">
-                简介
-            </h3>
-        </header>
-        <div class="am-panel-bd">
-            {{video.description}}
-        </div>
-    </div>
-</div>
-<template id="id_video_item_tpl">
+</template>
+<template id="id_video_item">
     <!--<div class="am-gallery-item am_list_block">-->
     <div class="am-gallery-item">
-        <a href="#" class="" @click.prevent="select(video.id)">
+        <a href="#" class="" @click.prevent="selectVideo(video.id)">
             <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
             <h3 class="am-gallery-title">{{video.title}}</h3>
             <div class="am_listimg_info">
@@ -259,13 +288,63 @@
     </div>
 </template>
 
+<template id="id_tv">
+    <div class="am-container">
+        <div class="am-panel am-panel-default" style="text-align: left;">
+            <div id="id_channel_select" class="am-panel-bd">
+                <span class="am-inline">选择频道:</span>
+                <span>
+                <v-select :on-change="select_channel" v-model="selected" :options="options" label="channel_name" class=""></v-select>
+            </span>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="id_tv_list">
+    <!--额外过滤选项 -->
+    <div class="am-panel am-panel-default" style="text-align: left;">
+        <div class="am-panel-hd">
+            <span class="am-text-left">搜索结果</span>
+            <span class="am-text-right" style="float: right;">共{{count}}个搜索结果</span>
+        </div>
+        <div class="am-panel-bd">
+            <ul data-am-widget="gallery"
+                class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered am-no-layout">
+                <li v-for="video in videos">
+                    <div>
+                        <video-item :video="video"></video-item>
+                    </div>
+                </li>
+                <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading">
+                    <span slot="no-results">没有更多的视频了:)</span>
+                </infinite-loading>
+            </ul>
+        </div>
+    </div>
+</template>
+<template id="id_tv_item">
+    <!--<div class="am-gallery-item am_list_block">-->
+    <div class="am-gallery-item">
+        <a href="#" class="" @click.prevent="selectVideo(video.id)">
+            <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
+            <h3 class="am-gallery-title">{{video.title}}</h3>
+            <div class="am_listimg_info">
+                <span class="am-icon-heart">{{video.definition}}</span>
+            </div>
+        </a>
+    </div>
+</template>
 <div data-am-widget="gotop" class="am-gotop am-gotop-fixed">
     <a href="#top" title="">
         <i class="am-gotop-icon am-icon-chevron-up"></i>
     </a>
 </div>
-<script src="app.js"></script>
-<script src="detail.js"></script>
-<script src="search.js"></script>
+<script src="router.js"></script>
+<script>
+
+</script>
+<!--<script src="app.js"></script>-->
+<!--<script src="detail.js"></script>-->
+<!--<script src="search.js"></script>-->
 </body>
 </html>
