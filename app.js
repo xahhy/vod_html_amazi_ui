@@ -3,12 +3,13 @@
  */
 'use strict';
 /* 全局变量 开始*/
-const URL_PREFIX = 'http://localhost:8000';
+const URL_PREFIX = 'http://localhost:8888';
 const CATEGORY_URL = URL_PREFIX + '/vod/api/category';
 const YEAR_URL = URL_PREFIX + '/vod/api/year';
 const REGION_URL = URL_PREFIX + '/vod/api/region';
 const VIDEO_LIST_URL = URL_PREFIX + '/vod/api';
 const VIDEO_DETAIL_URL = URL_PREFIX + '/vod/api/';
+const ADMIN_SITE = URL_PREFIX + '/admin';
 var CategoryListData;
 var myPlayer;
 /* Vue对象 */
@@ -306,6 +307,9 @@ function InitPage() {
 
 
 $(function () {
+    $('#id_admin_btn').click(function(){
+        window.location.href = ADMIN_SITE;
+    })
     InitPage();
 
 
