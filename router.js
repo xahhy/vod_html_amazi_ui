@@ -3,7 +3,7 @@
  */
 'use strict';
 /* 全局变量 开始*/
-const URL_PREFIX = 'http://192.168.0.145:8000';
+const URL_PREFIX = 'http://localhost:8000';
 const CATEGORY_URL = URL_PREFIX + '/vod/api/category';
 const YEAR_URL = URL_PREFIX + '/vod/api/year';
 const REGION_URL = URL_PREFIX + '/vod/api/region';
@@ -40,6 +40,12 @@ var CategoryList = {
             App.active_list = name;
             load_search_result();
         }
+    },
+    beforeRouteEnter:function (to, from, next) {
+        console.log('category before route enter');
+        next(function () {
+            load_category_list(to.params.main_category);
+        });
     }
 };
 var CategoryAdvanced = {
@@ -64,6 +70,13 @@ var CategoryAdvanced = {
         }
     },
     mounted:function () {
+    },
+    beforeRouteEnter:function (to, from, next) {
+        console.log('category advanced before route enter');
+        next(function () {
+            load_category_year(to.params.main_category);
+            load_category_region(to.params.main_category);
+        });
     }
 };
 var VideoItem = {
@@ -239,6 +252,10 @@ var router = new VueRouter({
                 default: true,
                 category_advanced: true,
                 video_list: true
+            },
+            beforeEnter: function (to, from, next) {
+                console.log('router beforeEnter');
+                next();
             }
         },
         {
@@ -306,6 +323,7 @@ function load_category_list(active_name) {
     App.category_list = [
         {name: '全部'}
     ];
+    if(!CategoryListData)return;
     $.each(CategoryListData[active_name], function (index, item) {
         App.category_list.push(item);
     });
@@ -379,7 +397,7 @@ $(function () {
     //InitPage();
     $('#id_admin_btn').click(function(){
         window.location.href = ADMIN_SITE;
-    })
+    });
     $.get(CATEGORY_URL, {}, function (data, status) {
         CategoryListData = data;
         // load_category_year();

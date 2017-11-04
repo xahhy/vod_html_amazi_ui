@@ -129,31 +129,27 @@
                 <!--</ul>-->
                 <!--</li>-->
             </ul>
-
-            <form id="id_search_form" @submit.prevent="onSubmit" class="am-topbar-form am-topbar-left am-form-inline"
-                  role="search">
-                <!--<div class="am-form-group">-->
-                <!--<input type="text" class="am-form-field am-input-sm" placeholder="搜索">-->
-                <!--</div>-->
-                <div class="am-g">
-                    <div class="am-u-lg-12">
-                        <div class="am-input-group">
-                        <span class="am-input-group-btn">
-                        <button class="am-btn am-btn-default" type="submit"><span
-                                class="am-icon-search"></span> </button>
-                        </span>
-                            <input type="text" class="am-form-field am-input-lg" v-model="search_word">
-                        </div>
-                    </div>
-                </div>
-            </form>
-
             <div class="am-topbar-right">
                 <button id="id_admin_btn" class="am-btn am-btn-primary am-topbar-btn am-btn-sm">系统管理</button>
             </div>
         </div>
     </header>
     <div id="id_content" class="am-container">
+        <form id="id_search_form" @submit.prevent="onSubmit" role="search">
+            <!--<div class="am-form-group">-->
+            <!--<input type="text" class="am-form-field am-input-sm" placeholder="搜索">-->
+            <!--</div>-->
+            <div class="am-g">
+                <div class="am-input-group">
+                    <span class="am-input-group-btn">
+                    <button class="am-btn am-btn-default" type="submit"><span
+                            class="am-icon-search"></span> </button>
+                    </span>
+                    <input type="text" class="am-form-field am-input-lg" v-model="search_word" placeholder="输入搜索视频的名称">
+                </div>
+            </div>
+        </form>
+        <br/>
         <keep-alive>
             <router-view class="view" :category_list="category_list"></router-view>
         </keep-alive>
@@ -269,8 +265,7 @@
                     简介
                 </h3>
             </header>
-            <div class="am-panel-bd">
-                {{video.description}}
+            <div class="am-panel-bd" v-html="video.description">
             </div>
         </div>
     </div>
@@ -289,14 +284,12 @@
 </template>
 
 <template id="id_tv">
-    <div class="am-container">
-        <div class="am-panel am-panel-default" style="text-align: left;">
-            <div id="id_channel_select" class="am-panel-bd">
-                <span class="am-inline">选择频道:</span>
-                <span>
-                <v-select :on-change="select_channel" v-model="selected" :options="options" label="channel_name" class=""></v-select>
-            </span>
-            </div>
+    <div class="am-panel am-panel-default" style="text-align: left;">
+        <div id="id_channel_select" class="am-panel-bd">
+            <span class="am-inline">选择频道:</span>
+            <span>
+            <v-select :on-change="select_channel" v-model="selected" :options="options" label="channel_name" class=""></v-select>
+        </span>
         </div>
     </div>
 </template>
