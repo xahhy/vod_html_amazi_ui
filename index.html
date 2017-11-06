@@ -35,7 +35,8 @@
     <!--
     <link rel="canonical" href="http://www.example.com/">
   -->
-    <link rel="stylesheet" href="dist_flat/css/flat-ui.min.css">
+    <!--<link rel="stylesheet" href="dist_flat/css/flat-ui.min.css">-->
+    <link rel="stylesheet" href="video-js.min.css">
     <link rel="stylesheet" href="assets_amazi/css/amazeui.min.css">
     <link rel="stylesheet" href="assets_amazi/css/app.css">
     <script src="assets_amazi/js/jquery-3.2.1.min.js"></script>
@@ -43,10 +44,10 @@
     <script src="vue.js"></script>
     <script src="vue-infinite-loading.js"></script>
     <script src="vue-router.js"></script>
-    <script src="dist_flat/js/flat-ui.js"></script>
-    <script src="dist_flat/js/vendor/video.js"></script>
-    <!-- <script src="video.js"></script> -->
-    <script src="videojs-contrib-hls.js"></script>
+    <!--<script src="dist_flat/js/flat-ui.js"></script>-->
+    <!--<script src="dist_flat/js/vendor/video.js"></script>-->
+    <script src="video.js"></script>
+    <script src="videojs-contrib-hls.min.js"></script>
     <script src="vue-select.js"></script>
 
     <!--<script src="iscroll.js"></script>-->
@@ -169,15 +170,7 @@
             <router-view name="tv_list" class="view"></router-view>
         </keep-alive>
     </div>
-    <video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls>
-      <source
-         src="http://192.168.1.115:8888/media/record/ZJTV1/20170709/7PHQ701574750.m3u8"
-         type="application/x-mpegURL">
-    </video>
 </div>
-<script>
-  var player=videojs('example-video');
-</script>
 <!-- 分类信息列表组件 -->
 <template id="id_category_list">
     <div class="am-panel am-panel-default" style="text-align: left;">
@@ -255,7 +248,7 @@
                     <span class="am-badge am-text-lg am-round">{{video.title}}</span>
             </header>
             <div class="am-panel-bd">
-                <div id="id_video_container">
+                <div id="id_video_container" class="video-wrapper">
                     <video id="id_video_js" class="video-js"></video>
                 </div>
             </div>

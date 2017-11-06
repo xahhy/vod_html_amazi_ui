@@ -3,7 +3,7 @@
  */
 'use strict';
 /* 全局变量 开始*/
-const URL_PREFIX = 'http://192.168.1.115:8888';
+const URL_PREFIX = 'http://localhost:8000';
 const CATEGORY_URL = URL_PREFIX + '/vod/api/category';
 const YEAR_URL = URL_PREFIX + '/vod/api/year';
 const REGION_URL = URL_PREFIX + '/vod/api/region';
@@ -464,7 +464,7 @@ function load_tv_detail(id) {
     });
 }
 function create_video_detail_html() {
-    return "<video id='id_video_js' class='video-js'></video>"
+    return '<video id="id_video_js" class="video-js vjs-default-skin"></video>'
 }
 function create_video(video_url) {
     // myPlayer = videojs('id_video_js',{},function () {
@@ -479,17 +479,11 @@ function create_video(video_url) {
     //     }, 0);
     // }
     $('#id_video_container').html(create_video_detail_html());
-    var options = {hls:{
-      withCredentials: true
-    }};
     myPlayer = videojs(document.getElementById('id_video_js'), {
         controls: true,
         autoplay: false,
         preload: 'auto',
-        width: '100%',
-        height: '100%',
-        flash: options,
-        html5: options
+        fluid: true
     }, function () {
         console.log('setup videojs');
     });
@@ -497,12 +491,15 @@ function create_video(video_url) {
     var src = {
         src: video_url,
         type: 'video/mp4',
-        withCredentials: true
+        withCredentials: false
     };
     if (video_url.endsWith('m3u8')) {
       src.type = 'application/x-mpegURL';
+      src.src = URL_PREFIX + '/media/record/' + src.src;
+      console.log('m3u8 url is:'+src.src);
     }
     myPlayer.src(src);
+    myPlayer.play();
 }
 $(function () {
     //InitPage();
