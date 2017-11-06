@@ -45,6 +45,8 @@
     <script src="vue-router.js"></script>
     <script src="dist_flat/js/flat-ui.js"></script>
     <script src="dist_flat/js/vendor/video.js"></script>
+    <!-- <script src="video.js"></script> -->
+    <script src="videojs-contrib-hls.js"></script>
     <script src="vue-select.js"></script>
 
     <!--<script src="iscroll.js"></script>-->
@@ -163,9 +165,20 @@
         </keep-alive>
         <router-view name="video_detail" class="view" :video="video"></router-view>
         <router-view name="tv_category" class="view"></router-view>
-
+        <keep-alive>
+            <router-view name="tv_list" class="view"></router-view>
+        </keep-alive>
     </div>
+    <video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls>
+      <source
+         src="http://192.168.1.115:8888/media/record/ZJTV1/20170709/7PHQ701574750.m3u8"
+         type="application/x-mpegURL">
+    </video>
 </div>
+<script>
+  var player=videojs('example-video');
+</script>
+<!-- 分类信息列表组件 -->
 <template id="id_category_list">
     <div class="am-panel am-panel-default" style="text-align: left;">
         <div class="am-panel-bd am-text-nowrap am_category_container">
@@ -179,6 +192,8 @@
         </div>
     </div>
 </template>
+
+<!-- 额外分类信息列表组件,包括时间和地区-->
 <template id="id_category_advanced">
     <div class="am-panel am-panel-default" style="text-align: left;">
         <div class="am-panel-hd">
@@ -209,8 +224,9 @@
         </div>
     </div>
 </template>
+
+<!-- 视频搜索结果组件 -->
 <template id="id_video_list">
-    <!--额外过滤选项 -->
     <div class="am-panel am-panel-default" style="text-align: left;">
         <div id="id_video_gallery_header" class="am-panel-hd">
             <span class="am-text-left">搜索结果</span>
@@ -236,9 +252,7 @@
         <div class="am-panel am-panel-default">
             <header class="am-panel-hd">
                 <h3 class="am-panel-title">
-                    <span class="am-badge am-badge-success am-text-lg am-round">{{video.category}}</span>
                     <span class="am-badge am-text-lg am-round">{{video.title}}</span>
-                    <span class="am-badge am-badge-warning am-text-lg am-round">{{video.definition}}</span></h3>
             </header>
             <div class="am-panel-bd">
                 <div id="id_video_container">
@@ -270,8 +284,9 @@
         </div>
     </div>
 </template>
+
+<!-- 视频搜索结果中的某一个视频组件 -->
 <template id="id_video_item">
-    <!--<div class="am-gallery-item am_list_block">-->
     <div class="am-gallery-item">
         <a href="#" class="" @click.prevent="selectVideo(video.id)">
             <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
@@ -283,6 +298,7 @@
     </div>
 </template>
 
+<!-- 录制节目选择组件 -->
 <template id="id_tv">
     <div class="am-panel am-panel-default" style="text-align: left;">
         <div id="id_channel_select" class="am-panel-bd">
@@ -293,8 +309,9 @@
         </div>
     </div>
 </template>
+
+<!-- 录制节目搜索结果列表组件 -->
 <template id="id_tv_list">
-    <!--额外过滤选项 -->
     <div class="am-panel am-panel-default" style="text-align: left;">
         <div class="am-panel-hd">
             <span class="am-text-left">搜索结果</span>
@@ -305,7 +322,7 @@
                 class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered am-no-layout">
                 <li v-for="video in videos">
                     <div>
-                        <video-item :video="video"></video-item>
+                        <tv-item :video="video"></tv-item>
                     </div>
                 </li>
                 <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading">
@@ -315,18 +332,21 @@
         </div>
     </div>
 </template>
+
+<!-- 录制节目搜索结果中的某一个视频组件 -->
 <template id="id_tv_item">
     <!--<div class="am-gallery-item am_list_block">-->
     <div class="am-gallery-item">
         <a href="#" class="" @click.prevent="selectVideo(video.id)">
-            <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
+            <img :src="video.image" :alt="video.title" class="am-inline" style="height: 100%">
             <h3 class="am-gallery-title">{{video.title}}</h3>
             <div class="am_listimg_info">
-                <span class="am-icon-heart">{{video.definition}}</span>
+                <span class="am-icon-heart">{{video.channel}}</span>
             </div>
         </a>
     </div>
 </template>
+
 <div data-am-widget="gotop" class="am-gotop am-gotop-fixed">
     <a href="#top" title="">
         <i class="am-gotop-icon am-icon-chevron-up"></i>
