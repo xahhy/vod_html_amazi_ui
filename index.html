@@ -15,20 +15,20 @@
     <!-- No Baidu Siteapp-->
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
 
-    <link rel="icon" type="image/png" href="assets_amazi/i/favicon.png">
+    <link rel="icon" type="image/png" href="src/assets_amazi/i/favicon.png">
 
     <!-- Add to homescreen for Chrome on Android -->
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="icon" sizes="192x192" href="assets_amazi/i/app-icon72x72@2x.png">
+    <link rel="icon" sizes="192x192" href="src/assets_amazi/i/app-icon72x72@2x.png">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
-    <link rel="apple-touch-icon-precomposed" href="assets_amazi/i/app-icon72x72@2x.png">
+    <link rel="apple-touch-icon-precomposed" href="src/assets_amazi/i/app-icon72x72@2x.png">
 
     <!-- Tile icon for Win8 (144x144 + tile color) -->
-    <meta name="msapplication-TileImage" content="assets_amazi/i/app-icon72x72@2x.png">
+    <meta name="msapplication-TileImage" content="src/assets_amazi/i/app-icon72x72@2x.png">
     <meta name="msapplication-TileColor" content="#0e90d2">
 
     <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
@@ -36,24 +36,20 @@
     <link rel="canonical" href="http://www.example.com/">
   -->
     <!--<link rel="stylesheet" href="dist_flat/css/flat-ui.min.css">-->
-    <link rel="stylesheet" href="video-js.min.css">
-    <link rel="stylesheet" href="assets_amazi/css/amazeui.min.css">
-    <link rel="stylesheet" href="assets_amazi/css/app.css">
-    <script src="assets_amazi/js/jquery-3.2.1.min.js"></script>
-    <script src="assets_amazi/js/amazeui.min.js"></script>
-    <script src="vue.js"></script>
-    <script src="vue-infinite-loading.js"></script>
-    <script src="vue-router.js"></script>
+    <link rel="stylesheet" href="src/video-js-6.4.0/video-js.min.css">
+    <link rel="stylesheet" href="src/assets_amazi/css/amazeui.min.css">
+    <link rel="stylesheet" href="src/assets_amazi/css/app.css">
+    <script src="src/assets_amazi/js/jquery-3.2.1.min.js"></script>
+    <script src="src/assets_amazi/js/amazeui.min.js"></script>
+    <script src="src/vue/vue.js"></script>
+    <script src="src/vue/vue-infinite-loading.js"></script>
+    <script src="src/vue/vue-router.js"></script>
+    <script src="src/vue/vue-select.js"></script>
     <!--<script src="dist_flat/js/flat-ui.js"></script>-->
     <!--<script src="dist_flat/js/vendor/video.js"></script>-->
-    <script src="video.js"></script>
-    <script src="videojs-contrib-hls.min.js"></script>
-    <script src="vue-select.js"></script>
-
-    <!--<script src="iscroll.js"></script>-->
-    <script>
-        videojs.options.flash.swf = "dist_flat/js/vendor/video-js.swf"
-    </script>
+    <script src="src/video-js-6.4.0/video.js"></script>
+    <script src="src/videojs-flash.min.js"></script>
+    <script src="src/videojs-contrib-hls.min.js"></script>
     <style>
         .am_list_block {
             padding: 10px;
@@ -260,7 +256,8 @@
                 </h3>
             </header>
             <div class="am-panel-bd">
-                <button v-for="(video_child,index) in video.video_list" class="am-btn am-btn-default am_category_btn am-btn-lg"
+                <button v-for="(video_child,index) in video.video_list"
+                        class="am-btn am-btn-default am_category_btn am-btn-lg"
                         @click="load_video(video_child.video);select(index);change_description(video_child)"
                         :class="{'am-btn-success':active_name == index}">{{video_child.select_name}}
                 </button>
@@ -297,7 +294,7 @@
         <div id="id_channel_select" class="am-panel-bd">
             <span class="am-inline">选择频道:</span>
             <span>
-            <v-select :on-change="select_channel" v-model="selected" :options="options" label="channel_name" class=""></v-select>
+            <v-select :on-change="select_channel" :value.sync="selected" :options="options" label="channel_name"></v-select>
         </span>
         </div>
     </div>
@@ -345,7 +342,7 @@
         <i class="am-gotop-icon am-icon-chevron-up"></i>
     </a>
 </div>
-<script src="router.js"></script>
+<script src="src/app/router.js"></script>
 <script>
 
 </script>

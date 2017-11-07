@@ -3,7 +3,7 @@
  */
 'use strict';
 /* 全局变量 开始*/
-const URL_PREFIX = 'http://localhost:8000';
+const URL_PREFIX = 'http://192.168.0.145:8000';
 const CATEGORY_URL = URL_PREFIX + '/vod/api/category';
 const YEAR_URL = URL_PREFIX + '/vod/api/year';
 const REGION_URL = URL_PREFIX + '/vod/api/region';
@@ -214,8 +214,8 @@ var TVCategory = {
     },
     data:function () {
         return {
-            options:[{channel_id:'全部',channel_name:'全部'}],
-            selected:'全部'
+            options:[{channel_id:null,channel_name:'全部'}],
+            selected:{channel_id:null,channel_name:'全部'}
         }
     },
     mounted:function () {
@@ -464,7 +464,9 @@ function load_tv_detail(id) {
     });
 }
 function create_video_detail_html() {
-    return '<video id="id_video_js" class="video-js vjs-default-skin"></video>'
+    return '<video id="id_video_js" class="video-js vjs-default-skin">' +
+        '<p>该软件不支持播放视频,请使用Chrome或其他浏览器,谢谢</p>' +
+        '</video>'
 }
 function create_video(video_url) {
     // myPlayer = videojs('id_video_js',{},function () {
@@ -483,7 +485,13 @@ function create_video(video_url) {
         controls: true,
         autoplay: false,
         preload: 'auto',
-        fluid: true
+        fluid: true,
+        techOrder:['html5', 'flash']
+        // flash: {
+        //     hls: {
+        //         withCredentials: false
+        //     }
+        // }
     }, function () {
         console.log('setup videojs');
     });
@@ -501,7 +509,7 @@ function create_video(video_url) {
     myPlayer.src(src);
     myPlayer.play();
 }
-$(function () {
+(function () {
     //InitPage();
     $('#id_admin_btn').click(function(){
         window.location.href = ADMIN_SITE;
@@ -509,6 +517,7 @@ $(function () {
     $.get(CATEGORY_URL, {}, function (data, status) {
         CategoryListData = data;
         // load_category_year();
+        alert('加载数据完成');
         load_category_main();
     });
-});
+})();

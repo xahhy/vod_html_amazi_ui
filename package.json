@@ -1,0 +1,25 @@
+{
+  "name": "vod_html_amazi_ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app/router.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xahhy/vod_html_amazi_ui.git"
+  },
+  "keywords": [
+    "hhy132831"
+  ],
+  "author": "hhy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xahhy/vod_html_amazi_ui/issues"
+  },
+  "homepage": "https://github.com/xahhy/vod_html_amazi_ui#readme",
+  "dependencies": {
+    "videojs-flash": "^2.0.1"
+  }
+}
