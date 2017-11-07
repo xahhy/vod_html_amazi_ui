@@ -510,14 +510,14 @@ function create_video(video_url) {
     myPlayer.play();
 }
 (function () {
-    //InitPage();
+    $('#my-modal-loading').modal();
     $('#id_admin_btn').click(function(){
         window.location.href = ADMIN_SITE;
     });
     $.get(CATEGORY_URL, {}, function (data, status) {
         CategoryListData = data;
         // load_category_year();
-        alert('加载数据完成');
+        $('#my-modal-loading').modal('close');
         load_category_main();
     });
 })();
