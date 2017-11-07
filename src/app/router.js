@@ -3,17 +3,17 @@
  */
 'use strict';
 /* 全局变量 开始*/
-const URL_PREFIX = 'http://192.168.0.145:8000';
-const CATEGORY_URL = URL_PREFIX + '/vod/api/category';
-const YEAR_URL = URL_PREFIX + '/vod/api/year';
-const REGION_URL = URL_PREFIX + '/vod/api/region';
-const VIDEO_LIST_URL = URL_PREFIX + '/vod/api';
-const VIDEO_DETAIL_URL = URL_PREFIX + '/vod/api/';
-const ADMIN_SITE = URL_PREFIX + '/admin';
-const TV_LIST_URL = URL_PREFIX + '/vod/api/record';
-const TV_DETAIL_URL = URL_PREFIX + '/vod/api/record/';
+var URL_PREFIX = 'http://192.168.0.145:8000';
+var CATEGORY_URL = URL_PREFIX + '/vod/api/category';
+var YEAR_URL = URL_PREFIX + '/vod/api/year';
+var REGION_URL = URL_PREFIX + '/vod/api/region';
+var VIDEO_LIST_URL = URL_PREFIX + '/vod/api';
+var VIDEO_DETAIL_URL = URL_PREFIX + '/vod/api/';
+var ADMIN_SITE = URL_PREFIX + '/admin';
+var TV_LIST_URL = URL_PREFIX + '/vod/api/record';
+var TV_DETAIL_URL = URL_PREFIX + '/vod/api/record/';
 
-const DEFAULT_SELECT_DATA = {
+var DEFAULT_SELECT_DATA = {
     category: '全部',
     year: '全部',
     region: '全部'
@@ -22,6 +22,13 @@ var CategoryListData;
 var IScroll = $.AMUI.iScroll;
 var myPlayer;
 var curData = DEFAULT_SELECT_DATA;
+/* IE兼容性函数 */
+if(typeof String.prototype.endsWith != 'function'){
+    String.prototype.endsWith = function (suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    }
+}
+
 /* Vue对象 */
 Vue.component('v-select', VueSelect.VueSelect);
 var HomeView = {
@@ -91,7 +98,7 @@ var VideoItem = {
     },
     methods:{
         selectVideo:function (id) {
-            router.push({path: `/vod/${id}`});
+            router.push({path: '/vod/' + id});
             console.log('select video '+id)
         }
     }
@@ -234,7 +241,7 @@ var TVItem = {
     },
     methods:{
         selectVideo:function (id) {
-            router.push({path: `/tv/${id}`});
+            router.push({path: '/tv/' + id});
             console.log('select tv '+id)
         }
     }
@@ -510,14 +517,16 @@ function create_video(video_url) {
     myPlayer.play();
 }
 (function () {
-    $('#my-modal-loading').modal();
+    // $('#my-modal-loading').modal();
     $('#id_admin_btn').click(function(){
         window.location.href = ADMIN_SITE;
     });
-    $.get(CATEGORY_URL, {}, function (data, status) {
+    alert(CATEGORY_URL);
+    $.get(CATEGORY_URL, {format:'json'}, function (data, status) {
+        alert('Get Data Done!'+data);
         CategoryListData = data;
         // load_category_year();
-        $('#my-modal-loading').modal('close');
+        // $('#my-modal-loading').modal('close');
         load_category_main();
     });
 })();

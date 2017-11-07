@@ -115,7 +115,7 @@
             <ul id="id_category_main" class="am-nav am-nav-pills am-topbar-nav am-text-center">
                 <!--<li v-for="category in main_categories">-->
                 <!--<a :href="gen_hash(category.name)" @click="select(category.name)">{{category.name}}</a>-->
-                <router-link :to="'/list/'+category.name" tag="li" v-for="category in main_categories">
+                <router-link :to="'/list/'+category.name" tag="li" v-for="(category, index) in main_categories">
                     <a>{{category.name}}</a>
                 </router-link>
                 <router-link to="/tv" tag="li"><a>电视回看</a></router-link>
