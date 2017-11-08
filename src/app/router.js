@@ -525,14 +525,17 @@ var current_full_screen = false;
 function onClickCustomFullScreen() {
     //language=JQuery-CSS
     var $video_container = $("#id_video_container");
+    var $full_screen_btn = $("#id_full_screen");
     if(!current_full_screen){
         current_full_screen = true;
         $video_container.addClass('custom_full_screen');
         $video_container.addClass('video-wrapper-full');
+        $full_screen_btn.html('<span>取消全屏</span>')
     }else{
         current_full_screen = false;
         $video_container.removeClass('custom_full_screen');
         $video_container.removeClass('video-wrapper-full');
+        $full_screen_btn.html('<span>网页全屏</span>')
     }
 }
 (function () {
