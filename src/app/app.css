@@ -1,0 +1,15 @@
+.custom_full_screen {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0;
+    z-index: 2000;
+}
+.video-wrapper {
+    height: 300px;
+}
+.video-wrapper-full {
+    height: 100% !important;
+}

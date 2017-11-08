@@ -471,7 +471,7 @@ function load_tv_detail(id) {
     });
 }
 function create_video_detail_html() {
-    return '<video id="id_video_js" class="video-js vjs-default-skin">' +
+    return '<video id="id_video_js" class="video-js vjs-default-skin vjs-fill">' +
         '<p>该软件不支持播放视频,请使用Chrome或其他浏览器,谢谢</p>' +
         '</video>'
 }
@@ -492,7 +492,6 @@ function create_video(video_url) {
         controls: true,
         autoplay: false,
         preload: 'auto',
-        fluid: true,
         techOrder:['html5', 'flash']
         // flash: {
         //     hls: {
@@ -501,6 +500,12 @@ function create_video(video_url) {
         // }
     }, function () {
         console.log('setup videojs');
+        //自定义播放按钮
+        var customer_play = '<button class="vjs-control" id="id_full_screen" onclick="onClickCustomFullScreen()">'+
+                '<span>网页全屏</span>'+
+                '</button>';
+        // var controlBar = document.getElementsByClassName('vjs-control-bar')[0];
+        $('.vjs-control-bar').append(customer_play);
     });
     myPlayer.pause();
     var src = {
@@ -516,17 +521,30 @@ function create_video(video_url) {
     myPlayer.src(src);
     myPlayer.play();
 }
+var current_full_screen = false;
+function onClickCustomFullScreen() {
+    //language=JQuery-CSS
+    var $video_container = $("#id_video_container");
+    if(!current_full_screen){
+        current_full_screen = true;
+        $video_container.addClass('custom_full_screen');
+        $video_container.addClass('video-wrapper-full');
+    }else{
+        current_full_screen = false;
+        $video_container.removeClass('custom_full_screen');
+        $video_container.removeClass('video-wrapper-full');
+    }
+}
 (function () {
-    // $('#my-modal-loading').modal();
+    $('#my-modal-loading').modal();
     $('#id_admin_btn').click(function(){
         window.location.href = ADMIN_SITE;
     });
-    alert(CATEGORY_URL);
     $.get(CATEGORY_URL, {format:'json'}, function (data, status) {
-        alert('Get Data Done!'+data);
+        // alert('Get Data Done!'+data);
         CategoryListData = data;
         // load_category_year();
-        // $('#my-modal-loading').modal('close');
+        $('#my-modal-loading').modal('close');
         load_category_main();
     });
 })();
