@@ -23,7 +23,7 @@ var IScroll = $.AMUI.iScroll;
 var myPlayer;
 var curData = DEFAULT_SELECT_DATA;
 /* IE兼容性函数 */
-if(typeof String.prototype.endsWith != 'function'){
+if (typeof String.prototype.endsWith != 'function') {
     String.prototype.endsWith = function (suffix) {
         return this.indexOf(suffix, this.length - suffix.length) !== -1;
     }
@@ -50,7 +50,7 @@ var CategoryList = {
             load_search_result();
         }
     },
-    beforeRouteEnter:function (to, from, next) {
+    beforeRouteEnter: function (to, from, next) {
         console.log('category before route enter');
         next(function () {
             load_category_list(to.params.main_category);
@@ -78,9 +78,9 @@ var CategoryAdvanced = {
             load_search_result();
         }
     },
-    mounted:function () {
+    mounted: function () {
     },
-    beforeRouteEnter:function (to, from, next) {
+    beforeRouteEnter: function (to, from, next) {
         console.log('category advanced before route enter');
         next(function () {
             load_category_year(to.params.main_category);
@@ -96,39 +96,41 @@ var VideoItem = {
             return URL_PREFIX + this.video.image;
         }
     },
-    methods:{
-        selectVideo:function (id) {
+    methods: {
+        selectVideo: function (id) {
             router.push({path: '/vod/' + id});
-            console.log('select video '+id)
+            console.log('select video ' + id)
         }
     }
 };
 var VideoListData = {
-    videos:[],
+    videos: [],
     cur_page: 1,
     num_pages: 0,
-    count:0
+    count: 0,
+    search_word: ''
 };
 var VideoList = {
     template: '#id_video_list',
     props: [],
-    components:{
-        'video-item':VideoItem
+    components: {
+        'video-item': VideoItem
     },
-    data:function () {
+    data: function () {
         return VideoListData;
     },
-    mounted:function () {
+    mounted: function () {
         console.log('Video List Created');
         var _video_list = this;
-        Bus.$on('resetInfinite', function () {
+        Bus.$on('resetInfinite', function (search_word) {
+            _video_list.search_word = search_word;
             _video_list.resetInfinite(_video_list);
         })
     },
-    beforeDestroy:function () {
-      console.log('video list before destroy')
+    beforeDestroy: function () {
+        console.log('video list before destroy')
     },
-    methods:{
+    methods: {
         infiniteHandler: function ($state) {
             var vue = this;
             // if(vue.num_pages === 0){
@@ -141,7 +143,7 @@ var VideoList = {
                 'category': App.active_list,
                 'year': App.active_year,
                 'region': App.active_region,
-                'search': App.search_word
+                'search': vue.search_word
             };
             console.log(context);
             $.get(VIDEO_LIST_URL, context, function (data, status) {
@@ -165,13 +167,13 @@ var VideoList = {
             _video_list.videos = [];
             _video_list.cur_page = 1;
             _video_list.num_pages = 1;
-            _video_list.$nextTick(function(){
+            _video_list.$nextTick(function () {
                 console.log('Reset Video Gallery');
                 _video_list.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
             });
         }
     },
-    beforeRouteUpdate:function (to, from, next) {
+    beforeRouteUpdate: function (to, from, next) {
         console.log('video list reused!');
         load_category_info(to.params.main_category);
         load_search_result();
@@ -180,56 +182,55 @@ var VideoList = {
 };
 var VideoContainer = {
     template: '#id_detail',
-    props : ['video'],
-    data:function () {
+    props: ['video'],
+    data: function () {
         return {
-            active_name:''
+            active_name: ''
         }
     },
-    computed:{
-    },
-    methods:{
+    computed: {},
+    methods: {
         load_video: function (video_url) {
             create_video(video_url);
         },
         select: function (name) {
             this.active_name = name;
         },
-        change_description: function(video) {
+        change_description: function (video) {
             this.video.description = video.description;
         }
     },
-    mounted:function () {
+    mounted: function () {
         console.log('video detail mounted');
-        if(router.currentRoute.name === 'video_detail'){
+        if (router.currentRoute.name === 'video_detail') {
             load_video_detail(router.currentRoute.params.id);
-        }else if (router.currentRoute.name ==='tv_detail') {
+        } else if (router.currentRoute.name === 'tv_detail') {
             load_tv_detail(router.currentRoute.params.id);
         }
     },
-    updated:function () {
-      console.log('video detail updated');
+    updated: function () {
+        console.log('video detail updated');
     }
 };
 // -------------------------------TV---------------------------------------
 var TVCategory = {
     template: '#id_tv',
-    methods:{
+    methods: {
         select_channel: function (data) {
             console.log(data.channel_id);
         }
     },
-    data:function () {
+    data: function () {
         return {
-            options:[{channel_id:null,channel_name:'全部'}],
-            selected:{channel_id:null,channel_name:'全部'}
+            options: [{channel_id: null, channel_name: '全部'}],
+            selected: {channel_id: null, channel_name: '全部'}
         }
     },
-    mounted:function () {
+    mounted: function () {
         console.log('TV Category mounted');
         var _tv_category = this;
-        $.get(URL_PREFIX+'/tv/api/channels',function(data, status){
-            _tv_category.options=[{channel_id:'全部', channel_name:'全部'}];
+        $.get(URL_PREFIX + '/tv/api/channels', function (data, status) {
+            _tv_category.options = [{channel_id: '全部', channel_name: '全部'}];
             _tv_category.options = _tv_category.options.concat(data);
         });
     }
@@ -237,46 +238,47 @@ var TVCategory = {
 var TVItem = {
     template: '#id_tv_item',
     props: ['video'],
-    computed: {
-    },
-    methods:{
-        selectVideo:function (id) {
+    computed: {},
+    methods: {
+        selectVideo: function (id) {
             router.push({path: '/tv/' + id});
-            console.log('select tv '+id)
+            console.log('select tv ' + id)
         }
     }
 };
 var TVListData = {
-    videos:[],
+    videos: [],
     cur_page: 1,
     num_pages: 0,
-    count:0
+    count: 0,
+    search_word: ''
 };
 var TVList = {
     template: '#id_tv_list',
     props: [],
-    components:{
-        'tv-item':TVItem
+    components: {
+        'tv-item': TVItem
     },
-    data:function () {
+    data: function () {
         return TVListData;
     },
-    mounted:function () {
+    mounted: function () {
         console.log('TV List Created');
         var _video_list = this;
-        Bus.$on('resetInfiniteTV', function () {
+        Bus.$on('resetInfiniteTV', function (search_word) {
+            _video_list.search_word = search_word;
             _video_list.resetInfiniteTV(_video_list);
-        })
+        });
     },
-    beforeDestroy:function () {
-      console.log('video list before destroy')
+    beforeDestroy: function () {
+        console.log('video list before destroy')
     },
-    methods:{
+    methods: {
         infiniteHandler: function ($state) {
             var vue = this;
             var context = {
                 'page': vue.cur_page,
-                'search': App.search_word
+                'search': vue.search_word
             };
             console.log(context);
             $.get(TV_LIST_URL, context, function (data, status) {
@@ -300,10 +302,39 @@ var TVList = {
             _video_list.videos = [];
             _video_list.cur_page = 1;
             _video_list.num_pages = 1;
-            _video_list.$nextTick(function(){
+            _video_list.$nextTick(function () {
                 console.log('Reset TV Gallery');
                 _video_list.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
             });
+        }
+    }
+};
+/* 搜索框 */
+var SearchForm = {
+    template: '#id_search_form',
+    props: [],
+    data: function () {
+        return {
+            search_word: ''
+        }
+    },
+    methods:{
+        onSubmit: function () {
+            Bus.$emit('resetInfinite', this.search_word);
+        }
+    }
+};
+var SearchFormTV = {
+    template: '#id_search_form',
+    props: [],
+    data: function () {
+        return {
+            search_word: ''
+        }
+    },
+    methods:{
+        onSubmit: function () {
+            Bus.$emit('resetInfiniteTV', this.search_word);
         }
     }
 };
@@ -322,18 +353,19 @@ var router = new VueRouter({
             }
         },
         {
-            path:'/vod/:id',
-            name:'video_detail',
-            components:{
+            path: '/vod/:id',
+            name: 'video_detail',
+            components: {
                 video_detail: VideoContainer
             },
-            props:{
-                video_detail:true
+            props: {
+                video_detail: true
             }
         },
         {
             path: '/list/:main_category',
             components: {
+                search_form: SearchForm,
                 default: CategoryList,
                 category_advanced: CategoryAdvanced,
                 video_list: VideoList
@@ -350,23 +382,24 @@ var router = new VueRouter({
         },
         {
             path: '/tv',
-            components:{
+            components: {
+                search_form: SearchFormTV,
                 tv_category: TVCategory,
                 tv_list: TVList
             },
-            props:{
+            props: {
                 tv_category: true,
                 tv_list: true
             }
         },
         {
-            path:'/tv/:id',
-            name:'tv_detail',
-            components:{
+            path: '/tv/:id',
+            name: 'tv_detail',
+            components: {
                 video_detail: VideoContainer
             },
-            props:{
-                video_detail:true
+            props: {
+                video_detail: true
             }
         },
 
@@ -385,14 +418,7 @@ var App = new Vue({
         category_list: [],
         category_year: [],
         category_region: [],
-        search_word: '',
-        video:{}
-    },
-    methods:{
-        onSubmit:function () {
-
-            load_search_result();
-        }
+        video: {}
     }
 });
 // router.beforeEach(function (to, from, next) {
@@ -425,7 +451,7 @@ function load_category_list(active_name) {
     App.category_list = [
         {name: '全部'}
     ];
-    if(!CategoryListData)return;
+    if (!CategoryListData)return;
     $.each(CategoryListData[active_name], function (index, item) {
         App.category_list.push(item);
     });
@@ -453,7 +479,7 @@ function load_category_region(name) {
         App.active_region = '全部';
     })
 }
-function load_search_result(){
+function load_search_result() {
     Bus.$emit('resetInfinite');
 }
 function load_video_detail(id) {
@@ -492,7 +518,7 @@ function create_video(video_url) {
         controls: true,
         autoplay: false,
         preload: 'auto',
-        techOrder:['html5', 'flash']
+        techOrder: ['html5', 'flash']
         // flash: {
         //     hls: {
         //         withCredentials: false
@@ -501,11 +527,12 @@ function create_video(video_url) {
     }, function () {
         console.log('setup videojs');
         //自定义播放按钮
-        var customer_play = '<button class="vjs-control" id="id_full_screen" onclick="onClickCustomFullScreen()">'+
-                '<span>网页全屏</span>'+
-                '</button>';
+        var $customer_play = $('<button class="vjs-control" id="id_full_screen">' +
+            '<span>网页全屏</span>' +
+            '</button>');
+        $customer_play.click(onClickCustomFullScreen);
         // var controlBar = document.getElementsByClassName('vjs-control-bar')[0];
-        $('.vjs-control-bar').append(customer_play);
+        $('.vjs-control-bar').append($customer_play);
     });
     myPlayer.pause();
     var src = {
@@ -514,9 +541,9 @@ function create_video(video_url) {
         withCredentials: false
     };
     if (video_url.endsWith('m3u8')) {
-      src.type = 'application/x-mpegURL';
-      src.src = URL_PREFIX + '/media/record/' + src.src;
-      console.log('m3u8 url is:'+src.src);
+        src.type = 'application/x-mpegURL';
+        src.src = URL_PREFIX + '/media/record/' + src.src;
+        console.log('m3u8 url is:' + src.src);
     }
     myPlayer.src(src);
     myPlayer.play();
@@ -526,12 +553,12 @@ function onClickCustomFullScreen() {
     //language=JQuery-CSS
     var $video_container = $("#id_video_container");
     var $full_screen_btn = $("#id_full_screen");
-    if(!current_full_screen){
+    if (!current_full_screen) {
         current_full_screen = true;
         $video_container.addClass('custom_full_screen');
         $video_container.addClass('video-wrapper-full');
         $full_screen_btn.html('<span>取消全屏</span>')
-    }else{
+    } else {
         current_full_screen = false;
         $video_container.removeClass('custom_full_screen');
         $video_container.removeClass('video-wrapper-full');
@@ -540,10 +567,10 @@ function onClickCustomFullScreen() {
 }
 (function () {
     $('#my-modal-loading').modal();
-    $('#id_admin_btn').click(function(){
+    $('#id_admin_btn').click(function () {
         window.location.href = ADMIN_SITE;
     });
-    $.get(CATEGORY_URL, {format:'json'}, function (data, status) {
+    $.get(CATEGORY_URL, {format: 'json'}, function (data, status) {
         // alert('Get Data Done!'+data);
         CategoryListData = data;
         // load_category_year();

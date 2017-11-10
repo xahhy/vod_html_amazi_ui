@@ -143,21 +143,7 @@
         </div>
     </header>
     <div id="id_content" class="am-container">
-        <form id="id_search_form" @submit.prevent="onSubmit" role="search">
-            <!--<div class="am-form-group">-->
-            <!--<input type="text" class="am-form-field am-input-sm" placeholder="搜索">-->
-            <!--</div>-->
-            <div class="am-g">
-                <div class="am-input-group">
-                    <span class="am-input-group-btn">
-                    <button class="am-btn am-btn-default" type="submit"><span
-                            class="am-icon-search"></span> </button>
-                    </span>
-                    <input type="text" class="am-form-field am-input-lg" v-model="search_word" placeholder="输入搜索视频的名称">
-                </div>
-            </div>
-        </form>
-        <br/>
+        <router-view name="search_form" class="view"></router-view>
         <keep-alive>
             <router-view class="view" :category_list="category_list"></router-view>
         </keep-alive>
@@ -304,7 +290,8 @@
         <div id="id_channel_select" class="am-panel-bd">
             <span class="am-inline">选择频道:</span>
             <span>
-            <v-select :on-change="select_channel" :value.sync="selected" :options="options" label="channel_name"></v-select>
+            <v-select :on-change="select_channel" :value.sync="selected" :options="options"
+                      label="channel_name"></v-select>
         </span>
         </div>
     </div>
@@ -347,12 +334,33 @@
     </div>
 </template>
 
+<!-- 搜索框 -->
+<template id="id_search_form">
+    <div>
+        <form @submit.prevent="onSubmit" role="search">
+            <!--<div class="am-form-group">-->
+            <!--<input type="text" class="am-form-field am-input-sm" placeholder="搜索">-->
+            <!--</div>-->
+            <div class="am-g">
+                <div class="am-input-group">
+                    <span class="am-input-group-btn">
+                    <button class="am-btn am-btn-default" type="submit"><span
+                            class="am-icon-search"></span> </button>
+                    </span>
+                    <input type="text" class="am-form-field am-input-lg" v-model="search_word" placeholder="输入搜索视频的名称">
+                </div>
+            </div>
+        </form>
+        <br/>
+    </div>
+</template>
 <div data-am-widget="gotop" class="am-gotop am-gotop-fixed">
     <a href="#top" title="">
         <i class="am-gotop-icon am-icon-chevron-up"></i>
     </a>
 </div>
 <script src="src/app/router.js"></script>
+<!--<script src="dist/bundle.min.js"></script>-->
 <script>
 
 </script>
