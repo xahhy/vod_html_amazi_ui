@@ -149,7 +149,7 @@ function load_search_result() {
     VideoGallery.videos = [];
     VideoGallery.cur_page = 1;
     VideoGallery.num_pages = 1;
-    VideoGallery.$nextTick(() => {
+    VideoGallery.$nextTick(function(){
         console.log('Reset Video Gallery');
         VideoGallery.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
     });

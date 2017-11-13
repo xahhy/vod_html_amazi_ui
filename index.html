@@ -103,9 +103,9 @@
     </div>
 </div>
 <div id="id_app">
-    <header class="am-topbar">
+    <header class="am-topbar am-topbar-inverse">
         <h1 class="am-topbar-brand">
-            <a href="#">导航页</a>
+           <router-link to="/">首页</router-link>
         </h1>
 
         <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only"
@@ -143,9 +143,10 @@
         </div>
     </header>
     <div id="id_content" class="am-container">
+        <keep-alive><router-view></router-view></keep-alive>
         <router-view name="search_form" class="view"></router-view>
         <keep-alive>
-            <router-view class="view" :category_list="category_list"></router-view>
+            <router-view name="category_list" class="view" :category_list="category_list"></router-view>
         </keep-alive>
         <keep-alive>
             <router-view name="category_advanced" class="view" :category_region="category_region"
@@ -354,11 +355,33 @@
         <br/>
     </div>
 </template>
+
+<template id="id_home">
+    <div>
+        <h1 class="ml6 am-text-center">
+        <span class="text-wrapper">
+            <span class="letters m-text-green">南海电子图书馆</span>
+        </span>
+        </h1>
+        <div id="id_home_slider" class="am-slider am-slider-c3" style="max-width: 530px;margin: auto">
+            <ul class="am-slides">
+                <li v-for="(video, index) in videos">
+                    <a href="#" @click.prevent="select_video(video.id)"><img :src="video.image" style="max-height: 300px"></a>
+                    <div class="am-slider-desc">
+                        <div class="am-slider-counter"><span class="am-active">{{index+1}}</span>/{{count}}</div>
+                        {{video.title}}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</template>
 <div data-am-widget="gotop" class="am-gotop am-gotop-fixed">
     <a href="#top" title="">
         <i class="am-gotop-icon am-icon-chevron-up"></i>
     </a>
 </div>
+<script src="src/anime.min.js"></script>
 <script src="src/app/router.js"></script>
 <!--<script src="dist/bundle.min.js"></script>-->
 <script>

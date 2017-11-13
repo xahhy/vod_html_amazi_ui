@@ -4,6 +4,7 @@
 'use strict';
 /* 全局变量 开始*/
 var URL_PREFIX = 'http://192.168.0.145:8000';
+var HOME_LIST_URL = URL_PREFIX + '/vod/api/home';
 var CATEGORY_URL = URL_PREFIX + '/vod/api/category';
 var YEAR_URL = URL_PREFIX + '/vod/api/year';
 var REGION_URL = URL_PREFIX + '/vod/api/region';
@@ -33,7 +34,47 @@ if (typeof String.prototype.endsWith != 'function') {
 Vue.component('v-select', VueSelect.VueSelect);
 var HomeView = {
     name: 'Home',
-    template: '<div>Home</div>'
+    template: '#id_home',
+    data:function () {
+        return {
+            count:0,
+            videos:[]
+        }
+    },
+    mounted:function(){
+        var vue = this;
+        $('.ml6 .letters').each(function () {
+            $(this).html($(this).text().replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
+        });
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml6 .letter',
+                translateY: ["1.1em", 0],
+                translateZ: 0,
+                duration: 750,
+                delay: function (el, i) {
+                    return 50 * i;
+                }
+            }).add({
+            targets: '.ml6',
+            opacity: 0,
+            duration: 1000,
+            easing: "easeOutExpo",
+            delay: 1000
+        });
+        $.get(HOME_LIST_URL,function (data, status) {
+            vue.count = data['count'];
+            vue.videos = data['videos'];
+            setTimeout(function(){
+                $('#id_home_slider').flexslider();
+            }, 100);
+        })
+    },
+    methods:{
+        select_video: function (id) {
+            router.push({ name: 'video_detail', params: { id: id }})
+        }
+    }
 };
 var CategoryList = {
     template: '#id_category_list',
@@ -366,12 +407,12 @@ var router = new VueRouter({
             path: '/list/:main_category',
             components: {
                 search_form: SearchForm,
-                default: CategoryList,
+                category_list: CategoryList,
                 category_advanced: CategoryAdvanced,
                 video_list: VideoList
             },
             props: {
-                default: true,
+                category_list: true,
                 category_advanced: true,
                 video_list: true
             },
