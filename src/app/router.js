@@ -5,6 +5,7 @@
 /* 全局变量 开始*/
 var URL_PREFIX = 'http://192.168.0.145:8000';
 var HOME_LIST_URL = URL_PREFIX + '/vod/api/home';
+var HOME_OVERVIEW_URL = URL_PREFIX + '/vod/api/home/overview';
 var CATEGORY_URL = URL_PREFIX + '/vod/api/category';
 var YEAR_URL = URL_PREFIX + '/vod/api/year';
 var REGION_URL = URL_PREFIX + '/vod/api/region';
@@ -31,15 +32,68 @@ if (typeof String.prototype.endsWith != 'function') {
 }
 
 /* Vue对象 */
+/* 视频缩略图组件 */
+var VideoItem = {
+    template: '#id_video_item',
+    props: ['video'],
+    computed: {
+        full_image_url: function () {
+            return URL_PREFIX + this.video.image;
+        }
+    },
+    methods: {
+        selectVideo: function (id) {
+            router.push({path: '/vod/' + id});
+            console.log('select video ' + id)
+        }
+    }
+};
+/* 主页分类视频概览 */
+var HomeCategoryVideo = {
+    name:'HomeCategory',
+    template: '#id_home_category',
+    props: ['category'],
+    components: {
+        'video-item': VideoItem
+    },
+    data: function () {
+        return {
+            videos:[]
+        };
+    },
+    mounted:function () {
+        var vue = this;
+        var context = {
+            category: this.category.name
+        };
+        $.get(HOME_OVERVIEW_URL, context, function (data, status) {
+            if(!data['error']){
+                vue.videos = data
+            }else{
+                alert(data['error'])
+            }
+        })
+    },
+    methods:{
+
+    }
+};
 Vue.component('v-select', VueSelect.VueSelect);
 var HomeView = {
     name: 'Home',
     template: '#id_home',
+    props:['main_categories'],
+    components:{
+        'category-item': HomeCategoryVideo
+    },
     data:function () {
         return {
             count:0,
             videos:[]
         }
+    },
+    computed:{
+
     },
     mounted:function(){
         var vue = this;
@@ -129,21 +183,7 @@ var CategoryAdvanced = {
         });
     }
 };
-var VideoItem = {
-    template: '#id_video_item',
-    props: ['video'],
-    computed: {
-        full_image_url: function () {
-            return URL_PREFIX + this.video.image;
-        }
-    },
-    methods: {
-        selectVideo: function (id) {
-            router.push({path: '/vod/' + id});
-            console.log('select video ' + id)
-        }
-    }
-};
+
 var VideoListData = {
     videos: [],
     cur_page: 1,
@@ -379,6 +419,8 @@ var SearchFormTV = {
         }
     }
 };
+
+/* 路由 */
 var router = new VueRouter({
     mode: 'hash',
     base: window.location.href,
@@ -442,8 +484,7 @@ var router = new VueRouter({
             props: {
                 video_detail: true
             }
-        },
-
+        }
     ]
 });
 var Bus = new Vue();

@@ -13,7 +13,10 @@
 .video-wrapper-full {
     height: 100% !important;
 }
-
+.m-panel-title {
+    border-left: 3px solid #1dd388;
+    padding-left: 6px;
+}
 /* 首页文字动画 */
 .ml6 {
     position: relative;
