@@ -51,47 +51,6 @@
     <script src="src/video-js-6.4.0/video.js"></script>
     <script src="src/videojs-flash.min.js"></script>
     <script src="src/videojs-contrib-hls.min.js"></script>
-    <style>
-        .am_list_block {
-            padding: 10px;
-            background: #fff;
-            position: relative;
-        }
-
-        .am_img_bg {
-            display: block;
-        }
-
-        .am_listimg_info {
-            color: #d1d1d1;
-            padding-top: 5px;
-        }
-
-        .am_imglist_time {
-            position: absolute;
-            bottom: 11px;
-            right: 10px;
-            margin-right: 0;
-        }
-
-        .am_category_btn {
-            margin: 5px 5px;
-            display: inline-block;
-        }
-
-        .am_category_container {
-            overflow: auto;
-
-        }
-
-        /*::-webkit-scrollbar { !*隐藏滚轮*!*/
-        /*display: none;*/
-        /*}*/
-
-        .am_display_none {
-            display: none;
-        }
-    </style>
 </head>
 <body>
 <div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="my-modal-loading">
@@ -276,11 +235,14 @@
 <template id="id_video_item">
     <div class="am-gallery-item m-video-item">
         <a href="#" class="" @click.prevent="selectVideo(video.id)">
-            <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
-            <h3 class="am-gallery-title">{{video.title}}</h3>
-            <div class="am_listimg_info">
-                <span class="am-icon-heart">{{video.definition}}</span>
+            <div class="m-pic">
+                <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
+                <div class="am_listimg_info">
+                    <span style="text-align: right">{{video.definition}}</span>
+                </div>
             </div>
+            <h3 class="am-gallery-title">{{video.title}}</h3>
+            <div class="m-category-info">{{video.category}}</div>
         </a>
     </div>
 </template>

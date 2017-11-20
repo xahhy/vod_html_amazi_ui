@@ -42,10 +42,62 @@
     color: #1dd388
 }
 
+/* AmaziUI */
+.am_list_block {
+    padding: 10px;
+    background: #fff;
+    position: relative;
+}
+
+.am_img_bg {
+    display: block;
+}
+
+.am_listimg_info {
+    color: white;
+    background: linear-gradient(transparent,rgba(0,0,0,.1) 20%,rgba(0,0,0,.2) 35%,rgba(0,0,0,.6) 65%,rgba(0,0,0,.9));
+    position: absolute;
+    bottom: 0;
+    height: 20px;
+    width: 100%;
+}
+
+.am_imglist_time {
+    position: absolute;
+    bottom: 11px;
+    right: 10px;
+    margin-right: 0;
+}
+
+.am_category_btn {
+    margin: 5px 5px;
+    display: inline-block;
+}
+
+.am_category_container {
+    overflow: auto;
+
+}
+
+/*::-webkit-scrollbar { !*隐藏滚轮*!*/
+/*display: none;*/
+/*}*/
+
+.am_display_none {
+    display: none;
+}
+
 /* 视频列表框 */
 .m-video-item {
-    transition: box-shadow 200ms cubic-bezier(0.4,0.0,0.2,1)
+    transition: box-shadow 200ms cubic-bezier(0.4,0.0,0.2,1);
 }
 .m-video-item:hover {
     box-shadow: 0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08);
+}
+.m-pic {
+    position: relative;
+}
+.m-category-info {
+    color: #9ba3ab;
+    font-size: 12px;
 }
