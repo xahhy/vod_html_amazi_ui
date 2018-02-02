@@ -3,7 +3,7 @@
  */
 'use strict';
 /* 全局变量 开始*/
-var URL_PREFIX = 'http://192.168.0.145:8000';
+var URL_PREFIX = 'http://127.0.0.1:8080';
 var HOME_LIST_URL = URL_PREFIX + '/vod/api/home';
 var HOME_OVERVIEW_URL = URL_PREFIX + '/vod/api/home/overview';
 var CATEGORY_URL = URL_PREFIX + '/vod/api/category';
@@ -38,7 +38,7 @@ var VideoItem = {
     props: ['video'],
     computed: {
         full_image_url: function () {
-            return URL_PREFIX + this.video.image;
+            return this.video.image;
         }
     },
     methods: {
@@ -624,7 +624,7 @@ function create_video(video_url) {
     };
     if (video_url.endsWith('m3u8')) {
         src.type = 'application/x-mpegURL';
-        src.src = URL_PREFIX + '/media/record/' + src.src;
+        // src.src = URL_PREFIX + '/media/record/' + src.src;
         console.log('m3u8 url is:' + src.src);
     }
     myPlayer.src(src);
