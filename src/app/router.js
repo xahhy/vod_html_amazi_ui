@@ -3,7 +3,7 @@
  */
 'use strict';
 /* 全局变量 开始*/
-var URL_PREFIX = 'http://127.0.0.1:8080';
+var URL_PREFIX = 'http://192.168.0.180';
 var HOME_LIST_URL = URL_PREFIX + '/vod/api/home';
 var HOME_OVERVIEW_URL = URL_PREFIX + '/vod/api/home/overview';
 var CATEGORY_URL = URL_PREFIX + '/vod/api/category';
