@@ -12,8 +12,7 @@ var REGION_URL = URL_PREFIX + '/vod/api/region';
 var VIDEO_LIST_URL = URL_PREFIX + '/vod/api';
 var VIDEO_DETAIL_URL = URL_PREFIX + '/vod/api/';
 var ADMIN_SITE = URL_PREFIX + '/admin';
-var TV_LIST_URL = URL_PREFIX + '/vod/api/record';
-var TV_DETAIL_URL = URL_PREFIX + '/vod/api/record/';
+
 
 var DEFAULT_SELECT_DATA = {
     category: '全部',
@@ -285,109 +284,10 @@ var VideoContainer = {
         console.log('video detail mounted');
         if (router.currentRoute.name === 'video_detail') {
             load_video_detail(router.currentRoute.params.id);
-        } else if (router.currentRoute.name === 'tv_detail') {
-            load_tv_detail(router.currentRoute.params.id);
         }
     },
     updated: function () {
         console.log('video detail updated');
-    }
-};
-// -------------------------------TV---------------------------------------
-var TVCategory = {
-    template: '#id_tv',
-    methods: {
-        select_channel: function (data) {
-            console.log(data.channel_id);
-        }
-    },
-    data: function () {
-        return {
-            options: [{channel_id: null, channel_name: '全部'}],
-            selected: {channel_id: null, channel_name: '全部'}
-        }
-    },
-    mounted: function () {
-        console.log('TV Category mounted');
-        var _tv_category = this;
-        $.get(URL_PREFIX + '/tv/api/channels', function (data, status) {
-            _tv_category.options = [{channel_id: '全部', channel_name: '全部'}];
-            _tv_category.options = _tv_category.options.concat(data);
-        });
-    }
-};
-var TVItem = {
-    template: '#id_tv_item',
-    props: ['video'],
-    computed: {},
-    methods: {
-        selectVideo: function (id) {
-            router.push({path: '/tv/' + id});
-            console.log('select tv ' + id)
-        }
-    }
-};
-var TVListData = {
-    videos: [],
-    cur_page: 1,
-    num_pages: 0,
-    count: 0,
-    search_word: ''
-};
-var TVList = {
-    template: '#id_tv_list',
-    props: [],
-    components: {
-        'tv-item': TVItem
-    },
-    data: function () {
-        return TVListData;
-    },
-    mounted: function () {
-        console.log('TV List Created');
-        var _video_list = this;
-        Bus.$on('resetInfiniteTV', function (search_word) {
-            _video_list.search_word = search_word;
-            _video_list.resetInfiniteTV(_video_list);
-        });
-    },
-    beforeDestroy: function () {
-        console.log('video list before destroy')
-    },
-    methods: {
-        infiniteHandler: function ($state) {
-            var vue = this;
-            var context = {
-                'page': vue.cur_page,
-                'search': vue.search_word
-            };
-            console.log(context);
-            $.get(TV_LIST_URL, context, function (data, status) {
-                vue.count = data['count'];
-                vue.cur_page = data['cur_page'];
-                vue.num_pages = data['num_pages'];
-                $.each(data['results'], function (index, value) {
-                    vue.videos.push(value);
-                });
-                if (vue.cur_page === vue.num_pages) {
-                    $state.complete();
-                } else {
-                    console.log('cur_page=' + vue.cur_page);
-                    $state.loaded();
-                    vue.cur_page++;
-                }
-            });
-        },
-        resetInfiniteTV: function (object) {
-            var _video_list = object;
-            _video_list.videos = [];
-            _video_list.cur_page = 1;
-            _video_list.num_pages = 1;
-            _video_list.$nextTick(function () {
-                console.log('Reset TV Gallery');
-                _video_list.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-            });
-        }
     }
 };
 /* 搜索框 */
@@ -402,20 +302,6 @@ var SearchForm = {
     methods:{
         onSubmit: function () {
             Bus.$emit('resetInfinite', this.search_word);
-        }
-    }
-};
-var SearchFormTV = {
-    template: '#id_search_form',
-    props: [],
-    data: function () {
-        return {
-            search_word: ''
-        }
-    },
-    methods:{
-        onSubmit: function () {
-            Bus.$emit('resetInfiniteTV', this.search_word);
         }
     }
 };
@@ -461,28 +347,6 @@ var router = new VueRouter({
             beforeEnter: function (to, from, next) {
                 console.log('router beforeEnter');
                 next();
-            }
-        },
-        {
-            path: '/tv',
-            components: {
-                search_form: SearchFormTV,
-                tv_category: TVCategory,
-                tv_list: TVList
-            },
-            props: {
-                tv_category: true,
-                tv_list: true
-            }
-        },
-        {
-            path: '/tv/:id',
-            name: 'tv_detail',
-            components: {
-                video_detail: VideoContainer
-            },
-            props: {
-                video_detail: true
             }
         }
     ]
@@ -569,13 +433,6 @@ function load_video_detail(id) {
     $.get(url, function (data, status) {
         App.video = data;
         create_video(App.video.video);
-    });
-}
-function load_tv_detail(id) {
-    var url = TV_DETAIL_URL + id;
-    $.get(url, function (data, status) {
-        App.video = data;
-        create_video(App.video.url);
     });
 }
 function create_video_detail_html() {
