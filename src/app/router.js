@@ -506,9 +506,9 @@ function onClickCustomFullScreen() {
 }
 (function () {
     $('#my-modal-loading').modal();
-    $('#id_admin_btn').click(function () {
-        window.location.href = ADMIN_SITE;
-    });
+    // $('#id_admin_btn').click(function () {
+    //     window.location.href = ADMIN_SITE;
+    // });
     $.get(CATEGORY_URL, {format: 'json'}, function (data, status) {
         // alert('Get Data Done!'+data);
         CategoryListData = data;

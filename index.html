@@ -96,7 +96,7 @@
                 <!--</li>-->
             </ul>
             <div class="am-topbar-right">
-                <button id="id_admin_btn" class="am-btn am-btn-primary am-topbar-btn am-btn-sm">系统管理</button>
+                <button id="id_admin_btn" class="am-btn am-btn-primary am-topbar-btn am-btn-sm"><a href="/admin">系统管理</a></button>
             </div>
         </div>
     </header>
@@ -231,7 +231,7 @@
     <div class="am-gallery-item m-video-item">
         <a href="#" class="" @click.prevent="selectVideo(video.id)">
             <div class="m-pic">
-                <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
+                <img :src="full_image_url" :alt="video.title" class="am-inline backup_image" onerror="this.src=null;this.src='img/missing.png';" style="height: 100%">
                 <div class="am_listimg_info">
                     <span style="text-align: right">{{video.definition}}</span>
                 </div>
@@ -272,7 +272,7 @@
         <div id="id_home_slider" class="am-slider am-slider-c3" style="margin-bottom: 20px"> <!--style="max-width: 530px;margin: auto">-->
             <ul class="am-slides">
                 <li v-for="(video, index) in videos">
-                    <a href="#" @click.prevent="select_video(video.id)"><img :src="video.image" style="max-height: 300px"></a>
+                    <a href="#" @click.prevent="select_video(video.id)"><img class="backup_image" :src="video.image" onerror="this.src=null;this.src='img/missing.png';" style="max-height: 300px"></a>
                     <div class="am-slider-desc">
                         <div class="am-slider-counter"><span class="am-active">{{index+1}}</span>/{{count}}</div>
                         {{video.title}}
