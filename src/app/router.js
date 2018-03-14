@@ -512,7 +512,7 @@ function load_category(){
 //     $('#my-modal-loading').modal('close');
 //     load_category_main();
 // });
-$.ajax(
+$.ajax({
   url:CATEGORY_URL,
   data:{format: 'json'},
   timeout: 5000,
@@ -526,7 +526,7 @@ $.ajax(
   error:function() {
       load_category();
   }
-)
+});
 }
 (function () {
     $('#my-modal-loading').modal();
