@@ -504,16 +504,34 @@ function onClickCustomFullScreen() {
         $full_screen_btn.html('<span>网页全屏</span>')
     }
 }
+function load_category(){
+// $.get(CATEGORY_URL, {format: 'json'}, function (data, status) {
+//     // alert('Get Data Done!'+data);
+//     CategoryListData = data;
+//     // load_category_year();
+//     $('#my-modal-loading').modal('close');
+//     load_category_main();
+// });
+$.ajax(
+  url:CATEGORY_URL,
+  data:{format: 'json'},
+  timeout: 5000,
+  success:function (data, status) {
+      // alert('Get Data Done!'+data);
+      CategoryListData = data;
+      // load_category_year();
+      $('#my-modal-loading').modal('close');
+      load_category_main();
+  },
+  error:function() {
+      load_category();
+  }
+)
+}
 (function () {
     $('#my-modal-loading').modal();
     // $('#id_admin_btn').click(function () {
     //     window.location.href = ADMIN_SITE;
     // });
-    $.get(CATEGORY_URL, {format: 'json'}, function (data, status) {
-        // alert('Get Data Done!'+data);
-        CategoryListData = data;
-        // load_category_year();
-        $('#my-modal-loading').modal('close');
-        load_category_main();
-    });
+    load_category();
 })();
