@@ -14,7 +14,7 @@ module.exports = {
         filename: "[name].js"
     },
     plugins: [
-        new webpack.optimize.UglifyJsPlugin({
+        new webpack.LoaderOptionsPlugin({
             include: /\.min\.js$/,
             minimize: true
         })
