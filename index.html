@@ -78,7 +78,6 @@
                 <router-link :to="'/list/'+category.name" tag="li" v-for="(category, index) in main_categories">
                     <a>{{category.name}}</a>
                 </router-link>
-                <router-link to="/tv" tag="li"><a>电视回看</a></router-link>
                 <!--</li>-->
 
                 <!--<li class="am-dropdown" data-am-dropdown>-->
@@ -97,7 +96,7 @@
                 <!--</li>-->
             </ul>
             <div class="am-topbar-right">
-                <button id="id_admin_btn" class="am-btn am-btn-primary am-topbar-btn am-btn-sm">系统管理</button>
+                <button id="id_admin_btn" class="am-btn am-btn-primary am-topbar-btn am-btn-sm"><a href="/admin">系统管理</a></button>
             </div>
         </div>
     </header>
@@ -116,10 +115,6 @@
             <router-view name="video_list" class="view"></router-view>
         </keep-alive>
         <router-view name="video_detail" class="view" :video="video"></router-view>
-        <router-view name="tv_category" class="view"></router-view>
-        <keep-alive>
-            <router-view name="tv_list" class="view"></router-view>
-        </keep-alive>
     </div>
 </div>
 <!-- 分类信息列表组件 -->
@@ -236,7 +231,7 @@
     <div class="am-gallery-item m-video-item">
         <a href="#" class="" @click.prevent="selectVideo(video.id)">
             <div class="m-pic">
-                <img :src="full_image_url" :alt="video.title" class="am-inline" style="height: 100%">
+                <img :src="full_image_url" :alt="video.title" class="am-inline backup_image" onerror="this.onerror=null;this.src='img/missing.jpg';" style="height: 100%">
                 <div class="am_listimg_info">
                     <span style="text-align: right">{{video.definition}}</span>
                 </div>
@@ -246,57 +241,6 @@
         </a>
     </div>
 </template>
-
-<!-- 录制节目选择组件 -->
-<template id="id_tv">
-    <div class="am-panel am-panel-default" style="text-align: left;">
-        <div id="id_channel_select" class="am-panel-bd">
-            <span class="am-inline">选择频道:</span>
-            <span>
-            <v-select :on-change="select_channel" :value.sync="selected" :options="options"
-                      label="channel_name"></v-select>
-        </span>
-        </div>
-    </div>
-</template>
-
-<!-- 录制节目搜索结果列表组件 -->
-<template id="id_tv_list">
-    <div class="am-panel am-panel-default" style="text-align: left;">
-        <div class="am-panel-hd">
-            <span class="am-text-left">搜索结果</span>
-            <span class="am-text-right" style="float: right;">共{{count}}个搜索结果</span>
-        </div>
-        <div class="am-panel-bd">
-            <ul data-am-widget="gallery"
-                class="am-gallery am-avg-sm-2 am-avg-md-3 am-avg-lg-4 am-gallery-bordered am-no-layout">
-                <li v-for="video in videos">
-                    <div>
-                        <tv-item :video="video"></tv-item>
-                    </div>
-                </li>
-                <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading">
-                    <span slot="no-results">没有更多的视频了:)</span>
-                </infinite-loading>
-            </ul>
-        </div>
-    </div>
-</template>
-
-<!-- 录制节目搜索结果中的某一个视频组件 -->
-<template id="id_tv_item">
-    <!--<div class="am-gallery-item am_list_block">-->
-    <div class="am-gallery-item">
-        <a href="#" class="" @click.prevent="selectVideo(video.id)">
-            <img :src="video.image" :alt="video.title" class="am-inline" style="height: 100%">
-            <h3 class="am-gallery-title">{{video.title}}</h3>
-            <div class="am_listimg_info">
-                <span class="am-icon-heart">{{video.channel}}</span>
-            </div>
-        </a>
-    </div>
-</template>
-
 <!-- 搜索框 -->
 <template id="id_search_form">
     <div>
@@ -328,7 +272,7 @@
         <div id="id_home_slider" class="am-slider am-slider-c3" style="margin-bottom: 20px"> <!--style="max-width: 530px;margin: auto">-->
             <ul class="am-slides">
                 <li v-for="(video, index) in videos">
-                    <a href="#" @click.prevent="select_video(video.id)"><img :src="video.image" style="max-height: 300px"></a>
+                    <a href="#" @click.prevent="select_video(video.id)"><img class="backup_image" :src="video.image" onerror="this.onerror=null;this.src='img/missing.jpg';" style="max-height: 300px"></a>
                     <div class="am-slider-desc">
                         <div class="am-slider-counter"><span class="am-active">{{index+1}}</span>/{{count}}</div>
                         {{video.title}}
