@@ -351,6 +351,9 @@ var router = new VueRouter({
         }
     ]
 });
+router.afterEach(function (to) {
+   destroy_video();
+});
 var Bus = new Vue();
 var App = new Vue({
     el: '#id_app',
@@ -434,6 +437,11 @@ function load_video_detail(id) {
         App.video = data;
         create_video(App.video.video);
     });
+}
+function destroy_video() {
+    if(myPlayer){
+        myPlayer.dispose();
+    }
 }
 function create_video_detail_html() {
     return '<video id="id_video_js" class="video-js vjs-default-skin vjs-fill">' +
