@@ -69,7 +69,7 @@ var HomeCategoryVideo = {
             if(!data['error']){
                 vue.videos = data
             }else{
-                alert(data['error'])
+                //alert(data['error'])
             }
         })
     },
