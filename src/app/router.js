@@ -37,7 +37,7 @@ var VideoItem = {
     props: ['video'],
     computed: {
         full_image_url: function () {
-            return this.video.image;
+            return URL_PREFIX + this.video.image;
         }
     },
     methods: {
@@ -91,7 +91,7 @@ var HomeView = {
             videos:[]
         }
     },
-    computed:{
+    computed: {
 
     },
     mounted:function(){
@@ -126,6 +126,9 @@ var HomeView = {
     methods:{
         select_video: function (id) {
             router.push({ name: 'video_detail', params: { id: id }})
+        },
+        full_image_url: function (url) {
+            return URL_PREFIX + url;
         }
     }
 };
@@ -265,7 +268,7 @@ var VideoContainer = {
     props: ['video'],
     data: function () {
         return {
-            active_name: ''
+            active_name: '-1'
         }
     },
     computed: {},

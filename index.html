@@ -272,7 +272,7 @@
         <div id="id_home_slider" class="am-slider am-slider-c3" style="margin-bottom: 20px"> <!--style="max-width: 530px;margin: auto">-->
             <ul class="am-slides">
                 <li v-for="(video, index) in videos">
-                    <a href="#" @click.prevent="select_video(video.id)"><img class="backup_image" :src="video.image" onerror="this.onerror=null;this.src='img/missing.jpg';" style="max-height: 300px"></a>
+                    <a href="#" @click.prevent="select_video(video.id)"><img class="backup_image" :src="full_image_url(video.image)" onerror="this.onerror=null;this.src='img/missing.jpg';" style="max-height: 300px"></a>
                     <div class="am-slider-desc">
                         <div class="am-slider-counter"><span class="am-active">{{index+1}}</span>/{{count}}</div>
                         {{video.title}}
