@@ -49,7 +49,7 @@ var VideoItem = {
 };
 /* 主页分类视频概览 */
 var HomeCategoryVideo = {
-    name:'HomeCategory',
+    name: 'HomeCategory',
     template: '#id_home_category',
     props: ['category'],
     components: {
@@ -57,44 +57,40 @@ var HomeCategoryVideo = {
     },
     data: function () {
         return {
-            videos:[]
+            videos: []
         };
     },
-    mounted:function () {
+    mounted: function () {
         var vue = this;
         var context = {
             category: this.category.name
         };
         $.get(HOME_OVERVIEW_URL, context, function (data, status) {
-            if(!data['error']){
+            if (!data['error']) {
                 vue.videos = data
-            }else{
+            } else {
                 //alert(data['error'])
             }
         })
     },
-    methods:{
-
-    }
+    methods: {}
 };
 Vue.component('v-select', VueSelect.VueSelect);
 var HomeView = {
     name: 'Home',
     template: '#id_home',
-    props:['main_categories'],
-    components:{
+    props: ['main_categories'],
+    components: {
         'category-item': HomeCategoryVideo
     },
-    data:function () {
+    data: function () {
         return {
-            count:0,
-            videos:[]
+            count: 0,
+            videos: []
         }
     },
-    computed: {
-
-    },
-    mounted:function(){
+    computed: {},
+    mounted: function () {
         var vue = this;
         $('.ml6 .letters').each(function () {
             $(this).html($(this).text().replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
@@ -115,17 +111,17 @@ var HomeView = {
             easing: "easeOutExpo",
             delay: 1000
         });
-        $.get(HOME_LIST_URL,function (data, status) {
+        $.get(HOME_LIST_URL, function (data, status) {
             vue.count = data['count'];
             vue.videos = data['videos'];
-            setTimeout(function(){
+            setTimeout(function () {
                 $('#id_home_slider').flexslider();
             }, 100);
         })
     },
-    methods:{
+    methods: {
         select_video: function (id) {
-            router.push({ name: 'video_detail', params: { id: id }})
+            router.push({name: 'video_detail', params: {id: id}})
         },
         full_image_url: function (url) {
             return URL_PREFIX + url;
@@ -302,7 +298,7 @@ var SearchForm = {
             search_word: ''
         }
     },
-    methods:{
+    methods: {
         onSubmit: function () {
             Bus.$emit('resetInfinite', this.search_word);
         }
@@ -355,7 +351,7 @@ var router = new VueRouter({
     ]
 });
 router.afterEach(function (to) {
-   destroy_video();
+    destroy_video();
 });
 var Bus = new Vue();
 var App = new Vue({
@@ -394,20 +390,23 @@ function load_category_main() {
     });
     load_category_info(router.currentRoute.params.main_category);
 }
+
 function load_category_info(main_category) {
     load_category_list(main_category);
     load_category_year(main_category);
     load_category_region(main_category);
 }
+
 function load_category_list(active_name) {
     App.category_list = [
         {name: '全部'}
     ];
-    if (!CategoryListData)return;
+    if (!CategoryListData) return;
     $.each(CategoryListData[active_name], function (index, item) {
         App.category_list.push(item);
     });
 }
+
 function load_category_year(name) {
     var context = {'category': name};
     $.get(YEAR_URL, context, function (data, status) {
@@ -419,6 +418,7 @@ function load_category_year(name) {
         });
     })
 }
+
 function load_category_region(name) {
     var context = {'category': name};
     $.get(REGION_URL, context, function (data, status) {
@@ -431,9 +431,11 @@ function load_category_region(name) {
         App.active_region = '全部';
     })
 }
+
 function load_search_result() {
     Bus.$emit('resetInfinite');
 }
+
 function load_video_detail(id) {
     var url = VIDEO_DETAIL_URL + id;
     $.get(url, function (data, status) {
@@ -441,81 +443,24 @@ function load_video_detail(id) {
         create_video(App.video.video);
     });
 }
+
 function destroy_video() {
-    if(myPlayer){
+    if (myPlayer) {
         myPlayer.dispose();
     }
 }
-function create_video_detail_html() {
-    return '<video id="id_video_js" class="video-js vjs-default-skin vjs-fill">' +
-        '<p>该软件不支持播放视频,请使用Chrome或其他浏览器,谢谢</p>' +
-        '</video>'
-}
-function create_video(video_url) {
-    // myPlayer = videojs('id_video_js',{},function () {
-    //     alert('setup videojs');
-    // });
 
-    // if (myPlayer) {
-    //     myPlayer.pause();
-    //     setTimeout(function() {
-    //         myPlayer.dispose();
-    //         myPlayer = null;
-    //     }, 0);
-    // }
-    $('#id_video_container').html(create_video_detail_html());
-    myPlayer = videojs(document.getElementById('id_video_js'), {
-        controls: true,
-        autoplay: false,
-        preload: 'auto',
-        techOrder: ['html5', 'flash']
-        // flash: {
-        //     hls: {
-        //         withCredentials: false
-        //     }
-        // }
-    }, function () {
-        console.log('setup videojs');
-        //自定义播放按钮
-        var $customer_play = $('<button class="vjs-control" id="id_full_screen">' +
-            '<span>网页全屏</span>' +
-            '</button>');
-        $customer_play.click(onClickCustomFullScreen);
-        // var controlBar = document.getElementsByClassName('vjs-control-bar')[0];
-        $('.vjs-control-bar').append($customer_play);
+function create_video(video_url) {
+    myPlayer = new DPlayer({
+        container: document.getElementById('id_video_container'),
+        screenshot: true,
+        video: {
+            url: video_url
+        }
     });
-    myPlayer.pause();
-    var src = {
-        src: video_url,
-        type: 'video/mp4',
-        withCredentials: false
-    };
-    if (video_url.endsWith('m3u8')) {
-        src.type = 'application/x-mpegURL';
-        // src.src = URL_PREFIX + '/media/record/' + src.src;
-        console.log('m3u8 url is:' + src.src);
-    }
-    myPlayer.src(src);
-    myPlayer.play();
 }
-var current_full_screen = false;
-function onClickCustomFullScreen() {
-    //language=JQuery-CSS
-    var $video_container = $("#id_video_container");
-    var $full_screen_btn = $("#id_full_screen");
-    if (!current_full_screen) {
-        current_full_screen = true;
-        $video_container.addClass('custom_full_screen');
-        $video_container.addClass('video-wrapper-full');
-        $full_screen_btn.html('<span>取消全屏</span>')
-    } else {
-        current_full_screen = false;
-        $video_container.removeClass('custom_full_screen');
-        $video_container.removeClass('video-wrapper-full');
-        $full_screen_btn.html('<span>网页全屏</span>')
-    }
-}
-function load_category(){
+
+function load_category() {
 // $.get(CATEGORY_URL, {format: 'json'}, function (data, status) {
 //     // alert('Get Data Done!'+data);
 //     CategoryListData = data;
@@ -523,22 +468,23 @@ function load_category(){
 //     $('#my-modal-loading').modal('close');
 //     load_category_main();
 // });
-$.ajax({
-  url:CATEGORY_URL,
-  data:{format: 'json'},
-  timeout: 5000,
-  success:function (data, status) {
-      // alert('Get Data Done!'+data);
-      CategoryListData = data;
-      // load_category_year();
-      $('#my-modal-loading').modal('close');
-      load_category_main();
-  },
-  error:function() {
-      load_category();
-  }
-});
+    $.ajax({
+        url: CATEGORY_URL,
+        data: {format: 'json'},
+        timeout: 5000,
+        success: function (data, status) {
+            // alert('Get Data Done!'+data);
+            CategoryListData = data;
+            // load_category_year();
+            $('#my-modal-loading').modal('close');
+            load_category_main();
+        },
+        error: function () {
+            load_category();
+        }
+    });
 }
+
 (function () {
     $('#my-modal-loading').modal();
     $('#id_admin_btn').click(function () {

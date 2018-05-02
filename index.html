@@ -40,6 +40,7 @@
     <link rel="stylesheet" href="src/assets_amazi/css/amazeui.min.css">
     <link rel="stylesheet" href="src/assets_amazi/css/app.css">
     <link rel="stylesheet" href="src/app/app.css">
+    <link rel="stylesheet" href="src/DPlayer/DPlayer.min.css">
     <script src="src/assets_amazi/js/jquery-3.2.1.min.js"></script>
     <script src="src/assets_amazi/js/amazeui.min.js"></script>
     <script src="src/vue/vue.min.js"></script>
@@ -48,9 +49,9 @@
     <script src="src/vue/vue-select.js"></script>
     <!--<script src="dist_flat/js/flat-ui.js"></script>-->
     <!--<script src="dist_flat/js/vendor/video.js"></script>-->
-    <script src="src/video-js-6.4.0/video.min.js"></script>
-    <script src="src/videojs-flash.min.js"></script>
-    <script src="src/videojs-contrib-hls.min.js"></script>
+    <!--<script src="src/video-js-6.4.0/video.min.js"></script>-->
+    <!--<script src="src/videojs-flash.min.js"></script>-->
+    <!--<script src="src/videojs-contrib-hls.min.js"></script>-->
 </head>
 <body>
 <div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="my-modal-loading">
@@ -196,7 +197,7 @@
             </header>
             <div class="am-panel-bd">
                 <div id="id_video_container" class="video-wrapper">
-                    <video id="id_video_js" class="video-js"></video>
+                    <!--<video id="id_video_js" class="video-js"></video>-->
                 </div>
             </div>
         </div>
@@ -307,6 +308,8 @@
         <i class="am-gotop-icon am-icon-chevron-up"></i>
     </a>
 </div>
+<script src="src/DPlayer/hls.min.js"></script>
+<script src="src/DPlayer/DPlayer.min.js"></script>
 <script src="src/anime.min.js"></script>
 <script src="src/app/router.js"></script>
 <!--<script src="dist/bundle.min.js"></script>-->
