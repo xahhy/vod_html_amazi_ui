@@ -446,11 +446,14 @@ function load_video_detail(id) {
 
 function destroy_video() {
     if (myPlayer) {
-        myPlayer.dispose();
+        myPlayer.video.src = '';
+        // myPlayer.destroy();
+        myPlayer = null;
     }
 }
 
 function create_video(video_url) {
+    destroy_video();
     myPlayer = new DPlayer({
         container: document.getElementById('id_video_container'),
         screenshot: true,
