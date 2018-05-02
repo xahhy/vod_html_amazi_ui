@@ -453,8 +453,15 @@ function destroy_video() {
         myPlayer = null;
     }
 }
-
+function isApp() {
+    var agent = navigator.userAgent;
+    return agent.indexOf('tongshi') > -1;
+}
 function create_video(video_url) {
+    if(isApp()){
+        window.android.getfs(video_url);
+        return;
+    }
     if (myPlayer) {
         curTimeDict[myPlayer.url] = myPlayer.video.currentTime;
         myPlayer.switchVideo(
