@@ -23,6 +23,7 @@ var CategoryListData;
 var IScroll = $.AMUI.iScroll;
 var myPlayer;
 var curData = DEFAULT_SELECT_DATA;
+var curTimeDict = {};
 /* IE兼容性函数 */
 if (typeof String.prototype.endsWith != 'function') {
     String.prototype.endsWith = function (suffix) {
@@ -448,19 +449,31 @@ function destroy_video() {
     if (myPlayer) {
         myPlayer.video.src = '';
         // myPlayer.destroy();
+        document.getElementById('id_video_container').innerHTML = '';
         myPlayer = null;
     }
 }
 
 function create_video(video_url) {
-    destroy_video();
-    myPlayer = new DPlayer({
-        container: document.getElementById('id_video_container'),
-        screenshot: true,
-        video: {
-            url: video_url
+    if (myPlayer) {
+        curTimeDict[myPlayer.video.src] = myPlayer.video.currentTime;
+        myPlayer.switchVideo(
+            {
+                url: video_url
+            }
+        );
+        if (curTimeDict[video_url]) {
+            myPlayer.seek(curTimeDict[video_url]);
         }
-    });
+    } else {
+        myPlayer = new DPlayer({
+            container: document.getElementById('id_video_container'),
+            screenshot: true,
+            video: {
+                url: video_url
+            }
+        });
+    }
 }
 
 function load_category() {
