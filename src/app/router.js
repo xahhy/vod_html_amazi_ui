@@ -456,12 +456,13 @@ function destroy_video() {
 
 function create_video(video_url) {
     if (myPlayer) {
-        curTimeDict[myPlayer.video.src] = myPlayer.video.currentTime;
+        curTimeDict[myPlayer.url] = myPlayer.video.currentTime;
         myPlayer.switchVideo(
             {
                 url: video_url
             }
         );
+        myPlayer.url=video_url;
     } else {
         myPlayer = new DPlayer({
             container: document.getElementById('id_video_container'),
@@ -470,6 +471,7 @@ function create_video(video_url) {
                 url: video_url
             }
         });
+        myPlayer.url=video_url;
     }
     if (curTimeDict[video_url]) {
         myPlayer.seek(curTimeDict[video_url]);
