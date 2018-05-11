@@ -3,121 +3,231 @@
  */
 'use strict';
 /* 全局变量 开始*/
-const URL_PREFIX = 'http://localhost:8888';
-const CATEGORY_URL = URL_PREFIX + '/vod/api/category';
-const YEAR_URL = URL_PREFIX + '/vod/api/year';
-const REGION_URL = URL_PREFIX + '/vod/api/region';
-const VIDEO_LIST_URL = URL_PREFIX + '/vod/api';
-const VIDEO_DETAIL_URL = URL_PREFIX + '/vod/api/';
-const ADMIN_SITE = URL_PREFIX + '/admin';
+var URL_PREFIX = '';
+var HOME_LIST_URL = URL_PREFIX + '/vod/api/home';
+var HOME_OVERVIEW_URL = URL_PREFIX + '/vod/api/home/overview';
+var CATEGORY_URL = URL_PREFIX + '/vod/api/category';
+var YEAR_URL = URL_PREFIX + '/vod/api/year';
+var REGION_URL = URL_PREFIX + '/vod/api/region';
+var VIDEO_LIST_URL = URL_PREFIX + '/vod/api';
+var VIDEO_DETAIL_URL = URL_PREFIX + '/vod/api/';
+var ADMIN_SITE = URL_PREFIX + '/admin';
+
+
+var DEFAULT_SELECT_DATA = {
+    category: '全部',
+    year: '全部',
+    region: '全部'
+};
 var CategoryListData;
+var IScroll = $.AMUI.iScroll;
 var myPlayer;
+var curData = DEFAULT_SELECT_DATA;
+var curTimeDict = {};
+/* IE兼容性函数 */
+if (typeof String.prototype.endsWith != 'function') {
+    String.prototype.endsWith = function (suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    }
+}
+
 /* Vue对象 */
-
-var Category = new Vue({
-    el: '#id_category_list',
-    data: {
-        categories: [
-            {name: '全部'}
-        ],
-        active_name: ''
-    },
-    methods: {
-        select: function (name) {
-            this.active_name = name;
-            load_search_result();
-        }
-    }
-});
-var CategoryMain = new Vue({
-    el: '#id_category_main',
-    data: {
-        categories: [],
-        active_name: ''
-    },
-    methods: {
-        select: function (name) {
-            this.active_name = name;
-            load_category_region(name);
-            load_category_time(name);
-            load_category_list();
-            load_search_result();
-        },
-        gen_hash: function (name) {
-            return '#' + name;
-        }
-    }
-});
-var CategoryYear = new Vue({
-    el: '#id_category_time',
-    data: {
-        categories: [
-            {name: '全部'}
-        ],
-        active_name: ''
-    },
-    methods: {
-        select: function (name) {
-            this.active_name = name;
-            load_search_result();
-        }
-    }
-});
-var CategoryRegion = new Vue({
-    el: '#id_category_region',
-    data: {
-        categories: [
-            {name: '全部'}
-        ],
-        active_name: ''
-    },
-    methods: {
-        select: function (name) {
-            this.active_name = name;
-            load_search_result();
-
-        }
-    }
-});
-var VideoItem = Vue.component('video-item', {
-    name:'video_item',
-    template: '#id_video_item_tpl',
+/* 视频缩略图组件 */
+var VideoItem = {
+    template: '#id_video_item',
     props: ['video'],
     computed: {
         full_image_url: function () {
             return URL_PREFIX + this.video.image;
         }
     },
-    methods:{
-        select: function (id) {
-            load_video_detail(id);
+    methods: {
+        selectVideo: function (id) {
+            router.push({path: '/vod/' + id});
+            console.log('select video ' + id)
         }
     }
+};
+/* 主页分类视频概览 */
+var HomeCategoryVideo = {
+    name: 'HomeCategory',
+    template: '#id_home_category',
+    props: ['category'],
+    components: {
+        'video-item': VideoItem
+    },
+    data: function () {
+        return {
+            videos: []
+        };
+    },
+    mounted: function () {
+        var vue = this;
+        var context = {
+            category: this.category.name
+        };
+        $.get(HOME_OVERVIEW_URL, context, function (data, status) {
+            if (!data['error']) {
+                vue.videos = data
+            } else {
+                //alert(data['error'])
+            }
+        })
+    },
+    methods: {}
+};
+Vue.component('v-select', VueSelect.VueSelect);
+var HomeView = {
+    name: 'Home',
+    template: '#id_home',
+    props: ['main_categories'],
+    components: {
+        'category-item': HomeCategoryVideo
+    },
+    data: function () {
+        return {
+            count: 0,
+            videos: []
+        }
+    },
+    computed: {},
+    mounted: function () {
+        var vue = this;
+        $('.ml6 .letters').each(function () {
+            $(this).html($(this).text().replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
+        });
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml6 .letter',
+                translateY: ["1.1em", 0],
+                translateZ: 0,
+                duration: 750,
+                delay: function (el, i) {
+                    return 50 * i;
+                }
+            }).add({
+            targets: '.ml6',
+            opacity: 0,
+            duration: 1000,
+            easing: "easeOutExpo",
+            delay: 1000
+        });
+        $.get(HOME_LIST_URL, function (data, status) {
+            vue.count = data['count'];
+            vue.videos = data['videos'];
+            setTimeout(function () {
+                $('#id_home_slider').flexslider();
+            }, 100);
+        })
+    },
+    methods: {
+        select_video: function (id) {
+            router.push({name: 'video_detail', params: {id: id}})
+        },
+        full_image_url: function (url) {
+            return URL_PREFIX + url;
+        }
+    }
+};
+var CategoryList = {
+    template: '#id_category_list',
+    props: ['category_list'],
+    data: function () {
+        return {
+            active_name: '全部'
+        }
+    },
+    methods: {
+        select: function (name) {
+            this.active_name = name;
+            App.active_list = name;
+            load_search_result();
+        }
+    },
+    beforeRouteEnter: function (to, from, next) {
+        console.log('category before route enter');
+        next(function () {
+            load_category_list(to.params.main_category);
+        });
+    }
+};
+var CategoryAdvanced = {
+    template: '#id_category_advanced',
+    props: ['category_year', 'category_region'],
+    data: function () {
+        return {
+            active_year: '全部',
+            active_region: '全部'
+        }
+    },
+    methods: {
+        select_year: function (name) {
+            this.active_year = name;
+            App.active_year = name;
+            load_search_result();
+        },
+        select_region: function (name) {
+            this.active_region = name;
+            App.active_region = name;
+            load_search_result();
+        }
+    },
+    mounted: function () {
+    },
+    beforeRouteEnter: function (to, from, next) {
+        console.log('category advanced before route enter');
+        next(function () {
+            load_category_year(to.params.main_category);
+            load_category_region(to.params.main_category);
+        });
+    }
+};
 
-});
-var VideoGallery = new Vue({
-    el: '#id_video_gallery',
-    data: {
-        videos: [],
-        cur_page: 1,
-        num_pages: 0
+var VideoListData = {
+    videos: [],
+    cur_page: 1,
+    num_pages: 0,
+    count: 0,
+    search_word: ''
+};
+var VideoList = {
+    template: '#id_video_list',
+    props: [],
+    components: {
+        'video-item': VideoItem
+    },
+    data: function () {
+        return VideoListData;
+    },
+    mounted: function () {
+        console.log('Video List Created');
+        var _video_list = this;
+        Bus.$on('resetInfinite', function (search_word) {
+            _video_list.search_word = search_word;
+            _video_list.resetInfinite(_video_list);
+        })
+    },
+    beforeDestroy: function () {
+        console.log('video list before destroy')
     },
     methods: {
         infiniteHandler: function ($state) {
-            //$state.complete();$state.loaded();
             var vue = this;
-            if(vue.num_pages === 0)return null;
+            // if(vue.num_pages === 0){
+            //     $state.complete();
+            //     return null;
+            // }
             var context = {
                 'page': vue.cur_page,
-                'main_category': CategoryMain.active_name,
-                'category': Category.active_name,
-                'year': CategoryYear.active_name,
-                'region': CategoryRegion.active_name,
-                'search': VideoSearch.search_word
+                'main_category': router.currentRoute.params.main_category,
+                'category': App.active_list,
+                'year': App.active_year,
+                'region': App.active_region,
+                'search': vue.search_word
             };
             console.log(context);
             $.get(VIDEO_LIST_URL, context, function (data, status) {
-                VideoGalleryHeader.count = data['count'];
+                vue.count = data['count'];
                 vue.cur_page = data['cur_page'];
                 vue.num_pages = data['num_pages'];
                 $.each(data['results'], function (index, value) {
@@ -131,186 +241,279 @@ var VideoGallery = new Vue({
                     vue.cur_page++;
                 }
             });
+        },
+        resetInfinite: function (object) {
+            var _video_list = object;
+            _video_list.videos = [];
+            _video_list.cur_page = 1;
+            _video_list.num_pages = 1;
+            _video_list.$nextTick(function () {
+                console.log('Reset Video Gallery');
+                _video_list.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+            });
+        }
+    },
+    beforeRouteUpdate: function (to, from, next) {
+        console.log('video list reused!');
+        load_category_info(to.params.main_category);
+        load_search_result();
+        next();
+    }
+};
+var VideoContainer = {
+    template: '#id_detail',
+    props: ['video'],
+    data: function () {
+        return {
+            active_name: '-1'
+        }
+    },
+    computed: {},
+    methods: {
+        load_video: function (video_url) {
+            create_video(video_url);
+        },
+        select: function (name) {
+            this.active_name = name;
+        },
+        change_description: function (video) {
+            this.video.description = video.description;
+        }
+    },
+    mounted: function () {
+        console.log('video detail mounted');
+        if (router.currentRoute.name === 'video_detail') {
+            load_video_detail(router.currentRoute.params.id);
+        }
+    },
+    updated: function () {
+        console.log('video detail updated');
+    }
+};
+/* 搜索框 */
+var SearchForm = {
+    template: '#id_search_form',
+    props: [],
+    data: function () {
+        return {
+            search_word: ''
+        }
+    },
+    methods: {
+        onSubmit: function () {
+            Bus.$emit('resetInfinite', this.search_word);
         }
     }
+};
+
+/* 路由 */
+var router = new VueRouter({
+    mode: 'hash',
+    base: window.location.href,
+    linkActiveClass: 'am-active',
+    routes: [
+        {
+            path: '/',
+            components: {
+                default: HomeView
+            },
+            props: {
+                default: true
+            }
+        },
+        {
+            path: '/vod/:id',
+            name: 'video_detail',
+            components: {
+                video_detail: VideoContainer
+            },
+            props: {
+                video_detail: true
+            }
+        },
+        {
+            path: '/list/:main_category',
+            components: {
+                search_form: SearchForm,
+                category_list: CategoryList,
+                category_advanced: CategoryAdvanced,
+                video_list: VideoList
+            },
+            props: {
+                category_list: true,
+                category_advanced: true,
+                video_list: true
+            },
+            beforeEnter: function (to, from, next) {
+                console.log('router beforeEnter');
+                next();
+            }
+        }
+    ]
 });
-var VideoGalleryHeader = new Vue({
-    el: '#id_video_gallery_header',
-    data:{
-        count:0
+router.afterEach(function (to) {
+    destroy_video();
+});
+var Bus = new Vue();
+var App = new Vue({
+    el: '#id_app',
+    router: router,
+    data: {
+        main_categories: [],
+        active_name: '',
+        active_list: '全部',
+        active_year: '全部',
+        active_region: '全部',
+        category_list: [],
+        category_year: [],
+        category_region: [],
+        video: {}
     }
 });
+// router.beforeEach(function (to, from, next) {
+//     // load_category_info(to.params.main_category);
+//     // load_search_result();
+//     // next();
+//     load_category_info(to.params.main_category);
+//     // load_search_result();
+//     console.log('success');
+//     next();
+// });
 
-/* 全局变量 结束*/
-
-/* 加载函数 开始 */
-function load_search_result() {
-    show_list_view();
-    VideoGallery.videos = [];
-    VideoGallery.cur_page = 1;
-    VideoGallery.num_pages = 1;
-    VideoGallery.$nextTick(function(){
-        console.log('Reset Video Gallery');
-        VideoGallery.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+function load_category_main() {
+    var first = true;
+    $.each(CategoryListData, function (key, value) {
+        if (first) {
+            App.active_name = key;
+            first = false;
+        }
+        App.main_categories.push({name: key});
     });
+    load_category_info(router.currentRoute.params.main_category);
 }
-function load_category_list() {
-    Category.categories = [
+
+function load_category_info(main_category) {
+    load_category_list(main_category);
+    load_category_year(main_category);
+    load_category_region(main_category);
+}
+
+function load_category_list(active_name) {
+    App.category_list = [
         {name: '全部'}
     ];
-    $.each(CategoryListData[CategoryMain.active_name], function (index, item) {
-        Category.categories.push(item);
-    });
-    Category.active_name = '全部';
-}
-function load_category_main() {
-    var first_index = 0;
-    $.each(CategoryListData, function (key, value) {
-        CategoryMain.categories.push({name: key});
-        if (first_index === 0) {
-            first_index++;
-            CategoryMain.active_name = key;
-        }
+    if (!CategoryListData) return;
+    $.each(CategoryListData[active_name], function (index, item) {
+        App.category_list.push(item);
     });
 }
-function load_category_time(name) {
+
+function load_category_year(name) {
     var context = {'category': name};
     $.get(YEAR_URL, context, function (data, status) {
-        CategoryYear.categories = [
+        App.category_year = [
             {name: '全部'}
         ];
         $.each(data, function (index, value) {
-            CategoryYear.categories.push({name: value});
+            App.category_year.push({name: value});
         });
-        CategoryYear.active_name = '全部';
     })
 }
+
 function load_category_region(name) {
     var context = {'category': name};
     $.get(REGION_URL, context, function (data, status) {
-        CategoryRegion.categories = [
+        App.category_region = [
             {name: '全部'}
         ];
         $.each(data, function (index, value) {
-            CategoryRegion.categories.push(value);
+            App.category_region.push(value);
         });
-        CategoryRegion.active_name = '全部';
+        App.active_region = '全部';
     })
 }
 
-/*
- {
- "count": 25,
- "next": "http://127.0.0.1:8000/api/?page=2",
- "previous": null,
- "cur_page": 1,
- "num_pages": 3,
- "page_range": [
- 1,
- 2,
- 3
- ],
- "year": null,
- "results": [
- {
- "id": 36,
- "title": "Django-vod批量上传",
- "image": "/media/hhy/browser-icon-chrome.png.200x300_q85_crop.png",
- "category": "言情片  (level 2)",
- "definition": "SD",
- "duration": null,
- "slug": "django-vodpi-liang-shang-chuan-24"
- },
- {
- "id": 35,
- "title": "Django-vod批量上传",
- "image": "/media/hhy/browser-icon-chrome.png.200x300_q85_crop.png",
- "category": "言情片  (level 2)",
- "definition": "SD",
- "duration": null,
- "slug": "django-vodpi-liang-shang-chuan-23"
- }
- ]
- }
- */
-function load_video_list() {
-    $.get(VIDEO_LIST_URL, function (data, status) {
-        $.each(data['results'], function (index, value) {
-            VideoGallery.videos.push(value);
-        })
-    })
+function load_search_result() {
+    Bus.$emit('resetInfinite');
 }
-/* 加载函数 结束 */
-/* 额外方法 开始 */
-function show_list_view() {
-    // myPlayer.pause();
-    // myPlayer.dispose();
+
+function load_video_detail(id) {
+    var url = VIDEO_DETAIL_URL + id;
+    $.get(url, function (data, status) {
+        App.video = data;
+        create_video(App.video.video);
+    });
+}
+
+function destroy_video() {
     if (myPlayer) {
-        myPlayer.pause();
-        setTimeout(function() {
-            myPlayer.dispose();
-            myPlayer = null;
-        }, 0);
+        myPlayer.video.src = '';
+        // myPlayer.destroy();
+        document.getElementById('id_video_container').innerHTML = '';
+        myPlayer = null;
     }
-    $('#id_list').show();
-    $('#id_detail').hide();
-
 }
-function show_detail_view() {
-    $('#id_list').hide();
-    $('#id_detail').show();
-
+function isApp() {
+    var agent = navigator.userAgent;
+    return agent.indexOf('tongshi') > -1;
 }
-/* 额外方法 结束 */
-
-//获得当前分类按钮上的文字
-function get_current_category_btn() {
-    $('.m-category-list button .am-btn-primary').text()
+function create_video(video_url) {
+    if(isApp()){
+        window.android.getfs(video_url);
+        return;
+    }
+    if (myPlayer) {
+        curTimeDict[myPlayer.url] = myPlayer.video.currentTime;
+        myPlayer.switchVideo(
+            {
+                url: video_url
+            }
+        );
+        myPlayer.url=video_url;
+    } else {
+        myPlayer = new DPlayer({
+            container: document.getElementById('id_video_container'),
+            screenshot: true,
+            video: {
+                url: video_url
+            }
+        });
+        myPlayer.url=video_url;
+    }
+    if (curTimeDict[video_url]) {
+        myPlayer.seek(curTimeDict[video_url]);
+    }
 }
-//获得当前时间按钮上的文字
-function get_current_time_btn() {
-    $('.m-category-list button .am-btn-primary').text()
-}
-//获得当前地区按钮上的文字
-function get_current_region_btn() {
-    $('.m-category-list button .am-btn-primary').text()
-}
 
-/* 按钮点击事件 开始 */
-
-/* 按钮点击事件 结束 */
-
-/* 初始化页面，获取初始数据 开始 */
-
-function InitPage() {
-    var hash = window.location.hash;
-    $.get(CATEGORY_URL, {}, function (data, status) {
-        CategoryListData = data;
-        load_category_main();
-        hash = hash.substring(1);
-        if($.isNumeric(hash)){
-            load_video_detail(hash);
+function load_category() {
+// $.get(CATEGORY_URL, {format: 'json'}, function (data, status) {
+//     // alert('Get Data Done!'+data);
+//     CategoryListData = data;
+//     // load_category_year();
+//     $('#my-modal-loading').modal('close');
+//     load_category_main();
+// });
+    $.ajax({
+        url: CATEGORY_URL,
+        data: {format: 'json'},
+        timeout: 5000,
+        success: function (data, status) {
+            // alert('Get Data Done!'+data);
+            CategoryListData = data;
+            // load_category_year();
+            $('#my-modal-loading').modal('close');
+            load_category_main();
+        },
+        error: function () {
+            load_category();
         }
-        else if (hash !== ''){
-            CategoryMain.active_name = hash;
-            CategoryMain.select(CategoryMain.active_name);
-        }
-        else{
-            CategoryMain.select(CategoryMain.active_name);
-        }
-        // $('#id_category_list').find(':first-child').click();
-    })
+    });
 }
 
-
-/* 初始化页面，获取初始数据 结束 */
-
-
-$(function () {
-    $('#id_admin_btn').click(function(){
+(function () {
+    $('#my-modal-loading').modal();
+    $('#id_admin_btn').click(function () {
         window.location.href = ADMIN_SITE;
-    })
-    InitPage();
-
-
-});
+    });
+    load_category();
+})();

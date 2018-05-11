@@ -5,8 +5,8 @@ var webpack = require("webpack");
 var path = require("path");
 module.exports = {
     entry: {
-        "bundle": "./src/app/router.js",
-        "bundle.min": "./src/app/router.js"
+        "bundle": "./src/app/app.js",
+        "bundle.min": "./src/app/app.js"
     },
     devtool: "eval-source-map",
     output: {

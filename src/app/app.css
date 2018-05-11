@@ -17,11 +17,14 @@
     border-left: 3px solid #1dd388;
     padding-left: 6px;
 }
+.am-panel-bd {
+    padding: 0.25rem;
+}
 /* 首页文字动画 */
 .ml6 {
     position: relative;
     font-weight: 900;
-    font-size: 3.3em;
+    font-size: 2.3em;
 }
 
 .ml6 .text-wrapper {
